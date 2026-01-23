@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import '../api/api_service.dart';
+import 'package:frontend/screens/infographic_test_screen.dart';
 
-class NewsTestScreen extends StatefulWidget {
-  const NewsTestScreen({super.key});
-
+class InfographicTestScreen extends StatefulWidget {
   @override
-  State<NewsTestScreen> createState() => _NewsTestScreenState();
+  State<InfographicTestScreen> createState() => _InfographicTestScreenState();
 }
 
-class _NewsTestScreenState extends State<NewsTestScreen> {
-  String status = 'Tekan tombol untuk GET /api/news';
-  List news = [];
+class _InfographicTestScreenState extends State<InfographicTestScreen> {
+  String status = 'Tekan tombol untuk GET /api/infographic';
+  List infographic = [];
 
-  Future<void> fetchNews() async {
+  Future<void> fetchInfographic() async {
     try {
       final api = ApiService();
-      final res = await api.getNews();
+      final res = await api.getInfographic();
 
       setState(() {
-        news = res;
+        infographic = res;
         status = 'Data berhasil dimuat';
       });
     } catch (e) {
@@ -31,23 +30,23 @@ class _NewsTestScreenState extends State<NewsTestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('GET News Test')),
+      appBar: AppBar(title: Text('Infographic GET Test'), centerTitle: true),
       body: Column(
         children: [
           Padding(
             padding: EdgeInsetsGeometry.all(16),
             child: ElevatedButton(
-              onPressed: fetchNews,
-              child: Text('GET News'),
+              onPressed: fetchInfographic,
+              child: Text('GET Infographic'),
             ),
           ),
           Expanded(
-            child: news.isEmpty
+            child: infographic.isEmpty
                 ? Center(child: Text(status))
                 : ListView.builder(
-                    itemCount: news.length,
+                    itemCount: infographic.length,
                     itemBuilder: (context, index) {
-                      final item = news[index];
+                      final item = infographic[index];
                       return ListTile(title: Text(item['title']));
                     },
                   ),

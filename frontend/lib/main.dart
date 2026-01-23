@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/screens/news_test_screen.dart';
+import 'package:frontend/api/api_service.dart';
 import 'api/api_config.dart';
+import 'package:frontend/screens/data_list_screen.dart';
+
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: ".env");
-
-  // cek base url
   debugPrint("API BASE URL: ${ApiConfig.baseUrl}");
 
   runApp(const MyApp());
@@ -19,28 +20,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final api = ApiService();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const NewsTestScreen(),
+      home: DataListScreen(title: 'Publication', fetchData: api.getPublication),
     );
   }
 }
 
-class HomeTestScreen extends StatelessWidget {
-  const HomeTestScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('James Bond Flutter'),
-      ),
-      body: const Center(
-        child: Text(
-          'Flutter hidup & backend siap',
-          style: TextStyle(fontSize: 20),
-        ),
-      ),
-    );
-  }
-}
