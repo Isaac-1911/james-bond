@@ -56,9 +56,8 @@ Flutter (Parsing Data & Update UI)
 
 ## ⚙️ Setup & Instalasi
 
-### 1️⃣ Backend (Laravel)
-
 ```bash
+1️⃣ Backend (Laravel)
 cd backend
 composer install
 cp .env.example .env
