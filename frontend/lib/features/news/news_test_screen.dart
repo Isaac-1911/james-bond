@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../api/api_service.dart';
+import '../../core/services/api_service.dart';
 
 class NewsTestScreen extends StatefulWidget {
   const NewsTestScreen({super.key});

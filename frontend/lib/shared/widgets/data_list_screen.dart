@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/publication.dart';
+import '../../features/news/news_detail_screen.dart';
 
-class DataListScreen extends StatefulWidget {
+class DataListScreen<T> extends StatefulWidget {
   final String title;
-  final Future<List<Publication>> Function() fetchData;
+  final Future<List<T>> Function() fetchData;
+  final String Function(T item) itemTitle;
+  final void Function(BuildContext context, T item)? onItemTap;
 
   const DataListScreen({
     super.key,
     required this.title,
     required this.fetchData,
+    required this.itemTitle,
+    this.onItemTap
   });
 
   @override
-  State<DataListScreen> createState() => _DataListScreenState();
+  State<DataListScreen<T>> createState() => _DataListScreenState<T>();
 }
 
-class _DataListScreenState extends State<DataListScreen> {
-  List<Publication> items = [];
+class _DataListScreenState<T> extends State<DataListScreen<T>> {
+  List<T> items = [];
   bool loading = true;
   String? error;
 
@@ -54,7 +58,12 @@ class _DataListScreenState extends State<DataListScreen> {
               itemBuilder: (context, index) {
                 final item = items[index];
 
-                return ListTile(title: Text(item.title ?? 'No title'));
+                return ListTile(
+  title: Text(widget.itemTitle(item)),
+  onTap: widget.onItemTap == null
+      ? null
+      : () => widget.onItemTap!(context, item),
+);
               },
             ),
     );

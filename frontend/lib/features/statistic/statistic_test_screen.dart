@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api/api_service.dart';
+import 'package:frontend/core/services/api_service.dart';
 
 class StatisticTestScreen extends StatefulWidget {
   @override

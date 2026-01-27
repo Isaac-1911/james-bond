@@ -1,34 +1,43 @@
 class Publication {
   final int id;
-  final String? title;
-  final String? release_date;
+  final String title;
+  final String? releaseDate;
   final String? summary;
-  final int publication_category;
-  final String? cover_url;
+  final int? publicationCategory;
+  final String? coverUrl;
   final String? description;
-  final String? file_url;
+  final String? fileUrl;
+  final int? catalogNumber;
+  final String? publicationNumber;
+  final String? isbn;
 
   Publication({
     required this.id,
-    this.title,
-    this.release_date,
+    required this.title,
+    this.releaseDate,
     this.summary,
-    required this.publication_category,
-    this.cover_url,
+    this.publicationCategory,
+    this.coverUrl,
     this.description,
-    this.file_url,
+    this.fileUrl,
+    this.catalogNumber,
+    this.publicationNumber,
+    this.isbn
   });
 
   factory Publication.fromJson(Map<String, dynamic> json) {
-    return Publication(
-      id: json['publication_id'],
-      title: json['title'],
-      release_date: json['release_date'],
-      summary: json['summary'],
-      publication_category: json['publication_category'],
-      cover_url: json['cover_url'],
-      description: json['descripton'],
-      file_url: json['file_url'],
-    );
-  }
+  return Publication(
+    id: json['publication_id'] as int,
+    title: json['title'] as String,
+    releaseDate: json['release_date'] as String?,
+    summary: json['summary'] as String?,
+    publicationCategory: json['publication_category'] as int?,
+    coverUrl: json['cover_url'] as String?,
+    description: json['description'] as String?,
+    fileUrl: json['file_url'] as String?,
+    catalogNumber: json['catalog_number'] as int?,
+    publicationNumber: json['publication_number'] as String?,
+    isbn: json['isbn'] as String?,
+  );
+}
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../api/api_service.dart';
-import 'package:frontend/screens/infographic_test_screen.dart';
+import '../../core/services/api_service.dart';
+import 'package:frontend/features/infographic/infographic_test_screen.dart';
 
 class InfographicTestScreen extends StatefulWidget {
   @override
