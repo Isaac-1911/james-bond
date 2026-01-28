@@ -74,11 +74,8 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
   }
 
   Future<void> _fetchPublications() async {
-  debugPrint('🚀 _fetchPublications CALLED');
-  debugPrint('🧪 isLoading=$_isLoading hasMore=$_hasMore');
 
   if (_isLoading || !_hasMore) {
-    debugPrint('⛔ FETCH SKIPPED');
     return;
   }
 
@@ -86,9 +83,6 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
     if (!mounted) return;
 
     setState(() => _isLoading = true);
-
-    debugPrint('📡 ABOUT TO CALL getPublications()');
-
     final result = await _apiService.getPublications(
       page: _page,
       limit: _limit,
@@ -96,9 +90,6 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
       sort: _sort,
       category: _category,
     );
-
-    debugPrint('📦 getPublications() RETURNED');
-
     final List<Publication> newItems = result['items'];
     final int currentPage = result['currentPage'];
     final int lastPage = result['lastPage'];

@@ -12,14 +12,32 @@ class PublicationController extends Controller
     /**
      * GET /api/publication
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Publication::orderBy('release_date', 'desc')->get();
+        $perPage = $request->get('limit', 10);
 
-        return ApiResponse::success(
-            $data,
-            'Publication list'
-        );
+        $query = Publication::query();
+
+        // FILTER UTAMA
+        if ($request->has('category')) {
+            $query->where('publication_category', $request->category);
+        }
+
+        // FILTER POPULER
+        if ($request->get('sort') === 'popular') {
+            $query->orderBy('download_count', 'desc');
+        } else {
+            $query->orderBy('release_date', 'desc');
+        }
+
+
+        if ($request->has('q')) {
+            $query->where('title', 'like', '%' . $request->q . '%');
+        }
+
+        $data = $query->paginate($perPage);
+
+        return ApiResponse::success($data, 'Publication list');
     }
 
     /**
@@ -140,23 +158,25 @@ class PublicationController extends Controller
 
 
 
-public function download(Publication $publication)
-{
-    $path = $publication->getRawOriginal('file_url');
+    public function download(Publication $publication)
+    {
+        $path = $publication->getRawOriginal('file_url');
 
-    if (!$path || !Storage::disk('public')->exists($path)) {
-        return ApiResponse::error(
-            'File not found',
-            null,
-            404
+        if (!$path || !Storage::disk('public')->exists($path)) {
+            return ApiResponse::error(
+                'File not found',
+                null,
+                404
+            );
+        }
+
+        $publication->increment('download_count');
+
+        return response()->download(
+            storage_path('app/public/' . $path)
+
+
+
         );
     }
-
-    return response()->download(
-        storage_path('app/public/' . $path)
-    );
-}
-
-
-
 }

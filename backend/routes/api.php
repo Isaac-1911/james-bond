@@ -9,6 +9,8 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\InfographicController;
 use App\Http\Controllers\SearchHistoryController;
+use App\Http\Controllers\Api\StatisticController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -35,9 +37,41 @@ Route::get('/publication/{id}', [PublicationController::class, 'show']);
 
 
 // Statistic Data
-Route::get('/statistics', [StatisticDataController::class, 'index']);
-Route::get('/statistics/{id}', [StatisticDataController::class, 'show']);
-Route::get('/statistics/chart', [StatisticDataController::class, 'chart']);
+// Route::get('/statistics', [StatisticDataController::class, 'index']);
+// Route::get('/statistics/{id}', [StatisticDataController::class, 'show']);
+// Route::get('/statistics/chart', [StatisticDataController::class, 'chart']);
+
+Route::get('/dashboard/summary', function () {
+    return response()->json([
+        'status' => 'success',
+        'data' => [
+            'news_count' => \App\Models\News::count(),
+            'publication_count' => \App\Models\Publication::count(),
+            'statistic_count' => \App\Models\StatisticData::count(),
+            'last_update' => now()->toDateString(),
+        ]
+    ]);
+});
+
+Route::get('/search', function (Illuminate\Http\Request $request) {
+    $q = $request->query('q');
+
+    return response()->json([
+        'status' => 'success',
+        'data' => [
+            'news' => \App\Models\News::where('title', 'like', "%$q%")->get(),
+            'statistics' => \App\Models\StatisticData::where('title', 'like', "%$q%")->get(),
+            'publications' => \App\Models\Publication::where('title', 'like', "%$q%")->get(),
+        ]
+    ]);
+});
+
+Route::prefix('/statistic')->group(function () {
+    Route::get('/subjects', [StatisticController::class, 'subjects']);
+    Route::get('/subsubjects/{subject}', [StatisticController::class, 'subsubjects']);
+    Route::get('/indicators/{subsubject}', [StatisticController::class, 'indicators']);
+    Route::get('/data/{indicator}', [StatisticController::class, 'data']);
+});
 
 
 

@@ -11,17 +11,29 @@ class StatisticDataController extends Controller
     /**
      * GET /api/statistics
      */
-    public function index()
-    {
-        $data = StatisticData::with('category')
-            ->orderBy('period', 'desc')
-            ->get();
+    /**
+ * GET /api/statistics
+ * Support filter by year (?year=2024)
+ */
+public function index(Request $request)
+{
+    $query = StatisticData::with('category')
+        ->orderBy('period', 'desc');
 
-        return ApiResponse::success(
-            $data,
-            'Statistic data list'
-        );
+    // 🔥 FILTER PER TAHUN (AllStat-style)
+    if ($request->has('year')) {
+        $year = $request->query('year');
+        $query->where('period', 'like', $year . '%');
     }
+
+    $data = $query->get();
+
+    return ApiResponse::success(
+        $data,
+        'Statistic data list'
+    );
+}
+
 
     /**
      * POST /api/statistics
