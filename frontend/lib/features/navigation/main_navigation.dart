@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/publication/publication_list_screen.dart';
+import 'package:frontend/features/statistic/screens/statistic_list_screen.dart';
+import 'package:frontend/features/statistic/screens/statistic_subject_screen.dart';
 import '../home/home_screen.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -20,7 +22,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   late final List<Widget> _pages = [
     HomeScreen(onNavigate: switchTab), 
-    const Center(child: Text('Tabel')),
+    const StatisticSubjectScreen(),
     const Center(child: Text('Cari')),
     const PublicationListScreen(),
     const Center(child: Text('Lainnya')),

@@ -158,7 +158,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
                     Icon(Icons.place, size: 18, color: Colors.grey),
                     SizedBox(width: 8),
                     Text(
-                      'BPS Republik Indonesia',
+                      'BPS Kabupaten Bondowoso',
                       style: TextStyle(color: Colors.grey),
                     ),
                   ],

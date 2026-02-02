@@ -8,10 +8,7 @@ import '../../models/news.dart';
 import '../news/news_detail_screen.dart';
 import '../publication/publication_detail_screen.dart';
 import '../../core/config/api_config.dart';
-import '../publication/publication_list_screen.dart';
-import '../statistic/statistic_list_screen.dart';
-import '../infographic/infographic_list_screen.dart';
-import '../news/news_list_screen.dart';
+
 import 'widgets/news_carousel_shimmer.dart';
 
 class HomeScreen extends StatefulWidget {

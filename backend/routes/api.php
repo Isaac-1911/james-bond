@@ -10,6 +10,10 @@ use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\InfographicController;
 use App\Http\Controllers\SearchHistoryController;
 use App\Http\Controllers\Api\StatisticController;
+use App\Http\Controllers\Api\StatisticTableController;
+use App\Http\Controllers\Api\StatisticSubjectController;
+use App\Http\Controllers\Api\StatisticSubsubjectController;
+
 
 
 /*
@@ -66,13 +70,23 @@ Route::get('/search', function (Illuminate\Http\Request $request) {
     ]);
 });
 
+// Route::prefix('/statistic')->group(function () {
+//     Route::get('/subjects', [StatisticController::class, 'subjects']);
+//     Route::get('/subsubjects/{subject}', [StatisticController::class, 'subsubjects']);
+//     Route::get('/indicators/{subsubject}', [StatisticController::class, 'indicators']);
+//     Route::get('/data/{indicator}', [StatisticController::class, 'data']);
+// });
+
 Route::prefix('/statistic')->group(function () {
-    Route::get('/subjects', [StatisticController::class, 'subjects']);
-    Route::get('/subsubjects/{subject}', [StatisticController::class, 'subsubjects']);
-    Route::get('/indicators/{subsubject}', [StatisticController::class, 'indicators']);
-    Route::get('/data/{indicator}', [StatisticController::class, 'data']);
+    Route::get('/subjects', [StatisticSubjectController::class, 'index']);
+    Route::get('/subsubjects/{subject}', [StatisticSubsubjectController::class, 'index']);
+    Route::get('/tables/{subsubject}', [StatisticTableController::class, 'index']);
+    Route::get('/table/{table}', [StatisticTableController::class, 'show']);
 });
 
+
+Route::get('/statistic/table/{id}', [StatisticTableController::class, 'show']);
+Route::get('/statistic/tables', [StatisticTableController::class, 'indexAll']);
 
 
 /*
