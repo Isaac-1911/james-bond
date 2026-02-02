@@ -1,15 +1,16 @@
 class StatisticTableRow {
+  final String label;
   final Map<String, dynamic> data;
 
-  StatisticTableRow({required this.data});
+  StatisticTableRow({
+    required this.label,
+    required this.data,
+  });
 
   factory StatisticTableRow.fromJson(Map<String, dynamic> json) {
-    final rawData = json['data'];
-
-    if (rawData is Map<String, dynamic>) {
-      return StatisticTableRow(data: rawData);
-    }
-
-    return StatisticTableRow(data: {});
+    return StatisticTableRow(
+      label: json['label'], 
+      data: Map<String, dynamic>.from(json['data']),
+    );
   }
 }

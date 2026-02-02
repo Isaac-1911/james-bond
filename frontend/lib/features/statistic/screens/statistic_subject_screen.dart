@@ -109,12 +109,31 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
 
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
-              child: ExpansionTile(
-                title: Text(
-                  subject.name ?? '-',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+              child: ExpansionTileTheme(
+                data: ExpansionTileThemeData(
+                  tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                  childrenPadding: const EdgeInsets.only(
+                    left: 8,
+                    right: 8,
+                    bottom: 8,
+                  ),
+                  expandedAlignment: Alignment.centerLeft,
+                  iconColor: Theme.of(context).colorScheme.primary,
+                  collapsedIconColor: Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  collapsedShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
-                children: [_buildSubsubjectList(subject.id!)],
+                child: ExpansionTile(
+                  title: Text(
+                    subject.name ?? '-',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  children: [_buildSubsubjectList(subject.id!)],
+                ),
               ),
             );
           },
@@ -156,7 +175,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
             final table = filtered[index];
 
             return ListTile(
-              title: Text(table.title ?? '-'),
+              title: _highlight(table.title ?? '-', _keyword),
               subtitle: Text(
                 '${table.subjectName ?? ''} • ${table.subsubjectName ?? ''}',
               ),
@@ -226,6 +245,37 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
           }).toList(),
         );
       },
+    );
+  }
+
+  IconData _iconForSubject(String name) {
+    final n = name.toLowerCase();
+    if (n.contains('demografi')) return Icons.people_alt_outlined;
+    if (n.contains('ekonomi')) return Icons.trending_up_outlined;
+    if (n.contains('sosial')) return Icons.groups_outlined;
+    if (n.contains('pertanian')) return Icons.agriculture_outlined;
+    return Icons.insert_chart_outlined;
+  }
+
+  Widget _highlight(String text, String keyword) {
+    if (keyword.isEmpty) return Text(text);
+    final lower = text.toLowerCase();
+    final k = keyword.toLowerCase();
+    final i = lower.indexOf(k);
+    if (i < 0) return Text(text);
+
+    return RichText(
+      text: TextSpan(
+        style: DefaultTextStyle.of(context).style,
+        children: [
+          TextSpan(text: text.substring(0, i)),
+          TextSpan(
+            text: text.substring(i, i + k.length),
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          TextSpan(text: text.substring(i + k.length)),
+        ],
+      ),
     );
   }
 }

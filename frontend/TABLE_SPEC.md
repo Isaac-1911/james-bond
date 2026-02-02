@@ -94,3 +94,79 @@ maksudnya itu gini son nanti di 3 subjek itu ada beberapa sub subjek seperti Kep
 +------------------------+
 
 apa gua harus rombak database gua lagi son untuk tabel itu biar ga perlu ribet lagi nantinya kalo ada perubahan? tolong gua son gua bingung disini
+
+INSERT INTO statistic_table_rows
+(table_id, row_label, row_order, data, created_at, updated_at)
+VALUES
+(
+  3,
+  'Kabupaten Bondowoso',
+  1,
+  '{"male":382226,"female":393925,"total":776151}',
+  NOW(),
+  NOW()
+),
+(
+  3,
+  'Maesan',
+  2,
+  '{"male":23858,"female":24218,"total":48076}',
+  NOW(),
+  NOW()
+),
+(
+  3,
+  'Grujugan',
+  3,
+  '{"male":18438,"female":18676,"total":37114}',
+  NOW(),
+  NOW()
+),
+(
+  3,
+  'Tamanan',
+  4,
+  '{"male":19015,"female":19399,"total":38414}',
+  NOW(),
+  NOW()
+),
+(
+  3,
+  'Jambesari DS',
+  5,
+  '{"male":17884,"female":18202,"total":36086}',
+  NOW(),
+  NOW()
+),
+(
+  3,
+  'Pujer',
+  6,
+  '{"male":19672,"female":20554,"total":40226}',
+  NOW(),
+  NOW()
+),
+(
+  3,
+  'Tlogosari',
+  7,
+  '{"male":22642,"female":23062,"total":45704}',
+  NOW(),
+  NOW()
+),
+(
+  3,
+  'Sukosari',
+  8,
+  '{"male":7560,"female":7967,"total":15527}',
+  NOW(),
+  NOW()
+),
+(
+  3,
+  'Sumber Wringin',
+  9,
+  '{"male":16856,"female":17375,"total":34231}',
+  NOW(),
+  NOW()
+);

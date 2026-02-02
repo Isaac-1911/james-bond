@@ -16,7 +16,7 @@ class StatisticTableRow extends Model
     ];
 
     protected $casts = [
-        'data' => 'array', // ⬅️ PENTING (JSON → array otomatis)
+        'data' => 'array', 
     ];
 
     public function table()

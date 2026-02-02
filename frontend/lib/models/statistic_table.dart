@@ -37,12 +37,8 @@ class StatisticTable {
       lastUpdated: json['last_updated'] != null
           ? DateTime.tryParse(json['last_updated'])
           : null,
-
-      // 🔥 FIELD OPSIONAL (AMAN KALAU TIDAK ADA)
       subjectName: json['subject_name'],
       subsubjectName: json['subsubject_name'],
-
-      // 🔥 TETAP PARSE DINAMIS
       columns: (json['columns'] as List? ?? [])
           .map((e) => StatisticTableColumn.fromJson(e))
           .toList(),

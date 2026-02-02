@@ -8,7 +8,7 @@ class StatisticTableColumn {
 
   factory StatisticTableColumn.fromJson(Map<String, dynamic> json) {
     return StatisticTableColumn(
-      key: json['key_name'] as String?,
+      key: json['key'] as String?,
       label: json['label'] as String?,
       unit: json['unit'] as String?,
       order: json['order'] as int?

@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import '../../../core/services/statistic_api_service.dart';
 import '../../../models/statistic_table.dart';
+import 'package:frontend/models/statistic_table_column.dart';
+import 'package:frontend/models/statistic_table_row.dart';
 
 class StatisticTableScreen extends StatefulWidget {
   final int tableId;
@@ -16,8 +18,7 @@ class StatisticTableScreen extends StatefulWidget {
   });
 
   @override
-  State<StatisticTableScreen> createState() =>
-      _StatisticTableScreenState();
+  State<StatisticTableScreen> createState() => _StatisticTableScreenState();
 }
 
 class _StatisticTableScreenState extends State<StatisticTableScreen> {
@@ -35,10 +36,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.download),
-            onPressed: _onExportCsv,
-          ),
+          IconButton(icon: const Icon(Icons.download), onPressed: _onExportCsv),
         ],
       ),
       body: FutureBuilder<StatisticTable>(
@@ -49,19 +47,13 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
           }
 
           if (snapshot.hasError) {
-            return const Center(
-              child: Text('Gagal memuat tabel statistik'),
-            );
+            return const Center(child: Text('Gagal memuat tabel statistik'));
           }
 
           final table = snapshot.data;
 
-          if (table == null ||
-              table.columns.isEmpty ||
-              table.rows.isEmpty) {
-            return const Center(
-              child: Text('Data tabel tidak tersedia'),
-            );
+          if (table == null || table.columns.isEmpty || table.rows.isEmpty) {
+            return const Center(child: Text('Data tabel tidak tersedia'));
           }
 
           return _buildScrollableTable(table);
@@ -86,55 +78,56 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
           children: [
             _buildHeader(columns),
             const Divider(height: 1),
-            ...table.rows.map(
-              (row) => _buildRow(columns, row),
-            ),
+            ...table.rows.map((row) => _buildRow(columns, row)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader(List columns) {
+  Widget _buildHeader(List<StatisticTableColumn> columns) {
     return Container(
       color: Colors.grey.shade200,
       child: Row(
-        children: columns.map<Widget>((col) {
-          final unit = col.unit;
-          final label = unit != null && unit.isNotEmpty
-              ? '${col.label}\n($unit)'
-              : col.label ?? '-';
+        children: [
+          _buildCell(text: 'Kecamatan', isHeader: true),
+          ...columns.map((col) {
+            final unit = col.unit;
+            final label = unit != null && unit.isNotEmpty
+                ? '${col.label ?? '-'}\n($unit)'
+                : (col.label ?? '-');
 
-          return _buildCell(text: label, isHeader: true);
-        }).toList(),
+            return _buildCell(text: label, isHeader: true);
+          }).toList(),
+        ],
       ),
     );
   }
 
-  Widget _buildRow(List columns, row) {
+  Widget _buildRow(List<StatisticTableColumn> columns, StatisticTableRow row) {
     return Row(
-      children: columns.map<Widget>((col) {
-        final value = row.data[col.key];
-        return _buildCell(text: value?.toString() ?? '-');
-      }).toList(),
+      children: [
+        // KECAMATAN
+        _buildCell(text: row.label),
+
+        // DATA
+        ...columns.map((col) {
+          final value = row.data[col.key];
+          return _buildCell(text: value?.toString() ?? '-');
+        }).toList(),
+      ],
     );
   }
 
-  Widget _buildCell({
-    required String text,
-    bool isHeader = false,
-  }) {
-    final isNumeric =
-        double.tryParse(text.replaceAll(',', '')) != null;
+  Widget _buildCell({required String text, bool isHeader = false}) {
+    final isNumeric = double.tryParse(text.replaceAll(',', '')) != null;
 
     return Container(
       width: 140,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
       alignment: isHeader
           ? Alignment.center
-          : (isNumeric
-              ? Alignment.centerRight
-              : Alignment.centerLeft),
+          : (isNumeric ? Alignment.centerRight : Alignment.centerLeft),
       decoration: BoxDecoration(
         border: Border(
           right: BorderSide(color: Colors.grey.shade300),
@@ -143,11 +136,12 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
       ),
       child: Text(
         text,
-        textAlign: isNumeric ? TextAlign.right : TextAlign.left,
+        maxLines: 1, // 🔥 PENTING
+        overflow: TextOverflow.ellipsis, // 🔥 PENTING
         style: TextStyle(
-          fontWeight:
-              isHeader ? FontWeight.bold : FontWeight.normal,
+          fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
         ),
+        textAlign: isNumeric ? TextAlign.right : TextAlign.left,
       ),
     );
   }
@@ -161,8 +155,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
     final columns = [...table.columns]
       ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
 
-    final header =
-        columns.map((c) => c.label ?? '').toList();
+    final header = columns.map((c) => c.label ?? '').toList();
 
     final rows = table.rows.map((row) {
       return columns.map((col) {
@@ -172,21 +165,18 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
     }).toList();
 
     final csvData = [header, ...rows];
-    final csv =
-        const ListToCsvConverter().convert(csvData);
+    final csv = const ListToCsvConverter().convert(csvData);
 
-    final directory =
-        await getApplicationDocumentsDirectory();
-    final fileName =
-        '${table.title?.replaceAll(' ', '_') ?? 'statistik'}.csv';
+    final directory = await getApplicationDocumentsDirectory();
+    final fileName = '${table.title?.replaceAll(' ', '_') ?? 'statistik'}.csv';
     final file = File('${directory.path}/$fileName');
 
     await file.writeAsString(csv);
 
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('CSV berhasil disimpan')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('CSV berhasil disimpan')));
   }
 }
