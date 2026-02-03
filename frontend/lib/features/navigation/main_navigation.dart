@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:frontend/features/publication/publication_list_screen.dart';
 import 'package:frontend/features/statistic/screens/statistic_subject_screen.dart';
+import 'package:cupertino_icons/cupertino_icons.dart';
 import '../home/home_screen.dart';
 import '../infographic/infographic_screen.dart';
 
@@ -21,7 +23,7 @@ class _MainNavigationState extends State<MainNavigation> {
     });
   }
 
- void _showMoreMenu(BuildContext context) {
+  void _showMoreMenu(BuildContext context) {
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
@@ -29,20 +31,13 @@ class _MainNavigationState extends State<MainNavigation> {
     builder: (_) {
       return Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.white.withOpacity(0.95), // Futuristic glassmorphism effect
-              Colors.blue.shade50.withOpacity(0.9),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          color: Colors.white.withOpacity(0.95),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
-              blurRadius: 20,
-              spreadRadius: 5,
+              blurRadius: 10,
+              offset: const Offset(0, -2),
             ),
           ],
         ),
@@ -52,41 +47,28 @@ class _MainNavigationState extends State<MainNavigation> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Enhanced drag handle with futuristic glow
               Container(
-                width: 50,
-                height: 6,
+                width: 36,
+                height: 5,
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade300.withOpacity(0.6),
-                  borderRadius: BorderRadius.circular(3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.blue.shade300.withOpacity(0.5),
-                      blurRadius: 8,
-                      spreadRadius: 2,
-                    ),
-                  ],
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(2.5),
                 ),
               ),
-
-              // Title for the menu, inspired by BPS (Badan Pusat Statistik) theme
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Text(
                   'James Bond Menu',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue.shade800,
-                    letterSpacing: 1.2,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
                   ),
                 ),
               ),
-
-              // Menu items with enhanced styling
               _menuItem(
-                icon: Icons.notifications_none,
+                icon: CupertinoIcons.bell,
                 title: 'Notifikasi',
                 onTap: () {
                   Navigator.pop(context);
@@ -94,7 +76,7 @@ class _MainNavigationState extends State<MainNavigation> {
                 },
               ),
               _menuItem(
-                icon: Icons.newspaper_outlined,
+                icon: CupertinoIcons.news,
                 title: 'Berita Resmi Statistik',
                 onTap: () {
                   Navigator.pop(context);
@@ -102,7 +84,7 @@ class _MainNavigationState extends State<MainNavigation> {
                 },
               ),
               _menuItem(
-                icon: Icons.calendar_today_outlined,
+                icon: CupertinoIcons.calendar,
                 title: 'Rencana Terbit',
                 onTap: () {
                   Navigator.pop(context);
@@ -110,7 +92,7 @@ class _MainNavigationState extends State<MainNavigation> {
                 },
               ),
               _menuItem(
-                icon: Icons.image_outlined,
+                icon: CupertinoIcons.photo,
                 title: 'Infografis',
                 onTap: () {
                   Navigator.pop(context);
@@ -118,7 +100,7 @@ class _MainNavigationState extends State<MainNavigation> {
                 },
               ),
               _menuItem(
-                icon: Icons.article_outlined,
+                icon: CupertinoIcons.doc_text,
                 title: 'Berita Kegiatan',
                 onTap: () {
                   Navigator.pop(context);
@@ -126,7 +108,7 @@ class _MainNavigationState extends State<MainNavigation> {
                 },
               ),
               _menuItem(
-                icon: Icons.info_outline,
+                icon: CupertinoIcons.info,
                 title: 'Tentang Kami',
                 onTap: () {
                   Navigator.pop(context);
@@ -149,38 +131,22 @@ Widget _menuItem({
   return Container(
     margin: const EdgeInsets.symmetric(vertical: 4),
     decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.8),
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.blue.shade100.withOpacity(0.3),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
-        ),
-      ],
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
     ),
     child: ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.blue.shade100.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, size: 24, color: Colors.blue.shade700),
-      ),
+      leading: Icon(icon, size: 24, color: const Color(0xFF007AFF)),
       title: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: Colors.blue.shade900,
+          fontWeight: FontWeight.w500,
+          color: Colors.black,
         ),
       ),
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   );
 }
@@ -191,72 +157,53 @@ Widget _menuItem({
     const Center(child: Text('Cari')),
     const PublicationListScreen(),
     const InfographicScreen(),
-
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-  backgroundColor: const Color(0xFFF2F2F7),
-  body: IndexedStack(index: _currentIndex, children: _pages),
-  bottomNavigationBar: Container(
-    margin: const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 12,
-    ),
-    decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.9),
-      borderRadius: BorderRadius.circular(20),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 12,
-          offset: const Offset(0, -3),
+      backgroundColor: const Color(0xFFF2F2F7),
+      body: IndexedStack(index: _currentIndex, children: _pages),
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 12,
+              offset: const Offset(0, -3),
+            ),
+          ],
         ),
-      ],
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      child: GNav(
-        selectedIndex: _currentIndex,
-        onTabChange: (index) {
-          if (index == 4) {
-            _showMoreMenu(context);
-            return;
-          }
-          switchTab(index);
-        },
-        backgroundColor: Colors.transparent,
-        color: Colors.grey.shade500,
-        activeColor: const Color(0xFF007AFF),
-        tabBackgroundColor: const Color(0xFF007AFF).withOpacity(0.1),
-        gap: 4,
-        padding: const EdgeInsets.all(12),
-        tabs: const [
-          GButton(
-            icon: Icons.home_outlined,
-            text: 'Beranda',
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: GNav(
+            selectedIndex: _currentIndex,
+            onTabChange: (index) {
+              if (index == 4) {
+                _showMoreMenu(context);
+                return;
+              }
+              switchTab(index);
+            },
+            backgroundColor: Colors.transparent,
+            color: Colors.grey.shade500,
+            activeColor: const Color(0xFF007AFF),
+            tabBackgroundColor: const Color(0xFF007AFF).withOpacity(0.1),
+            gap: 4,
+            padding: const EdgeInsets.all(12),
+            tabs: const [
+              GButton(icon: CupertinoIcons.home, text: 'Beranda'),
+              GButton(icon: CupertinoIcons.chart_bar_alt_fill, text: 'Tabel'),
+              GButton(icon: CupertinoIcons.search, text: 'Cari'),
+              GButton(icon: CupertinoIcons.book, text: 'Publikasi'),
+              GButton(icon: CupertinoIcons.line_horizontal_3, text: 'Lainnya'),
+            ],
           ),
-          GButton(
-            icon: Icons.table_chart_outlined,
-            text: 'Tabel',
-          ),
-          GButton(
-            icon: Icons.search_outlined,
-            text: 'Cari',
-          ),
-          GButton(
-            icon: Icons.menu_book_outlined,
-            text: 'Publikasi',
-          ),
-          GButton(
-            icon: Icons.menu_outlined,
-            text: 'Lainnya',
-          ),
-        ],
+        ),
       ),
-    ),
-  ),
-);
+    );
   }
 }

@@ -3,12 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:frontend/models/publication.dart';
+import 'package:cupertino_icons/cupertino_icons.dart';
+import 'package:flutter/cupertino.dart';
 import '../../core/services/api_service.dart';
+import '../../core/config/api_config.dart';
 import '../../models/news.dart';
 import '../../models/infographic.dart';
 import '../news/news_detail_screen.dart';
 import '../publication/publication_detail_screen.dart';
-import '../../core/config/api_config.dart';
 
 import 'widgets/news_carousel_shimmer.dart';
 
@@ -104,80 +106,68 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 16,
-                  ), // Padding lebih luas
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.8),
                     borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(24),
-                      bottomRight: Radius.circular(24),
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.05),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         color: Colors.white.withOpacity(0.1),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceBetween, // Geser untuk space antara kiri dan kanan
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // Nama Aplikasi di kiri atas
                             const Text(
                               'James Bond',
                               style: TextStyle(
                                 fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                                 color: Color(0xFF007AFF),
                               ),
                             ),
-                            // Avatar / Login Admin dan Notifikasi di kanan
                             Row(
                               children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.blue.shade200,
-                                      width: 2,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.blue.shade200.withOpacity(
-                                          0.5,
-                                        ),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: CircleAvatar(
-                                    radius: 22,
-                                    backgroundColor: Colors.blue.shade100,
-                                    child: const Icon(
-                                      Icons.person_outline_rounded,
-                                      color: Color(0xFF007AFF),
-                                    ),
-                                  ),
-                                ),
+                                // Container(
+                                //   decoration: BoxDecoration(
+                                //     shape: BoxShape.circle,
+                                //     border: Border.all(
+                                //       color: Colors.blue.shade200,
+                                //       width: 1.5,
+                                //     ),
+                                //   ),
+                                //   child: CircleAvatar(
+                                //     radius: 20,
+                                //     backgroundColor: Colors.blue.shade50,
+                                //     child: const Icon(
+                                //       CupertinoIcons.person,
+                                //       color: Color(0xFF007AFF),
+                                //       size: 24,
+                                //     ),
+                                //   ),
+                                // ),
                                 const SizedBox(width: 16),
-                                // Notifikasi
                                 IconButton(
                                   onPressed: () {
                                     // TODO: halaman notifikasi
                                   },
                                   icon: const Icon(
-                                    Icons.notifications_outlined,
+                                    CupertinoIcons.bell,
                                     color: Color(0xFF007AFF),
-                                    size: 28,
+                                    size: 24,
                                   ),
                                 ),
                               ],
