@@ -5,6 +5,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:frontend/models/publication.dart';
 import '../../core/services/api_service.dart';
 import '../../models/news.dart';
+import '../../models/infographic.dart';
 import '../news/news_detail_screen.dart';
 import '../publication/publication_detail_screen.dart';
 import '../../core/config/api_config.dart';
@@ -30,12 +31,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _currentCarouselIndex = 0;
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
+  late Future<List<Infographic>> _infographicFuture;
 
   @override
   void initState() {
     super.initState();
     _fetchNews();
     _fetchPublications();
+    _infographicFuture = ApiService().getInfographicCached();
 
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 800),
@@ -157,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     ],
                                   ),
                                   child: CircleAvatar(
-                                    radius: 22, 
+                                    radius: 22,
                                     backgroundColor: Colors.blue.shade100,
                                     child: const Icon(
                                       Icons.person_outline_rounded,
@@ -329,26 +332,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Text(
                         'Publikasi Terbaru',
                         style: TextStyle(
-                          fontSize: 20, // Sedikit lebih besar
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF007AFF),
                         ),
                       ),
-                      // Text(
-                      //   'Lihat Semua',
-                      //   style: TextStyle(
-                      //     color: Color(0xFF007AFF),
-                      //     fontWeight: FontWeight.w500,
-                      //   ),
-                      // ),
+                      TextButton(
+                        onPressed: () {
+                          widget.onNavigate(3);
+                        },
+                        child: const Text(
+                          'Lihat Semua',
+                          style: TextStyle(
+                            color: Color(0xFF007AFF),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 16),
 
                 // List publikasi
@@ -370,6 +377,82 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ..._publications.map((pub) {
                           return _buildPublicationItem(context, pub);
                         }).toList(),
+
+                      const SizedBox(height: 24),
+
+                      // ==========================
+                      // Infografis Terbaru
+                      // ==========================
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Infografis Terbaru',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF007AFF),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              widget.onNavigate(4);
+                            },
+                            child: const Text(
+                              'Lihat Semua',
+                              style: TextStyle(
+                                color: Color(0xFF007AFF),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      SizedBox(
+                        height: 260, // tinggi card (penting)
+                        child: FutureBuilder(
+                          future: _infographicFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+
+                            if (snapshot.hasError || !snapshot.hasData) {
+                              return const Center(
+                                child: Text('Gagal memuat infografis'),
+                              );
+                            }
+
+                            final items = snapshot.data!;
+
+                            // ambil 5 terbaru
+                            final latest = items.take(5).toList();
+
+                            return ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: latest.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(width: 16),
+                              itemBuilder: (context, index) {
+                                final item = latest[index];
+                                return _InfographicHomeCard(
+                                  imageUrl:
+                                      '${ApiConfig.storageUrl}/${item.image_url}',
+                                  onTap: () {
+                                    widget.onNavigate(4); // ke tab Infografis
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -791,4 +874,32 @@ Widget _pdfFallback() {
     color: Colors.red.shade50,
     child: const Icon(Icons.picture_as_pdf, color: Colors.red, size: 28),
   );
+}
+
+class _InfographicHomeCard extends StatelessWidget {
+  final String imageUrl;
+  final VoidCallback onTap;
+
+  const _InfographicHomeCard({required this.imageUrl, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: AspectRatio(
+          aspectRatio: 3 / 4, // mirip screenshot BPS
+          child: Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, progress) {
+              if (progress == null) return child;
+              return Container(color: Colors.grey.shade200);
+            },
+          ),
+        ),
+      ),
+    );
+  }
 }

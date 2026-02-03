@@ -14,8 +14,7 @@ class InfographicController extends Controller
      */
     public function index()
     {
-        $data = Infographic::all();
-
+        $data = Infographic::orderBy('created_at', 'desc')->get();
         return ApiResponse::success(
             $data,
             'Infographic list'

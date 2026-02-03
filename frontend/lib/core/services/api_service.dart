@@ -85,4 +85,20 @@ class ApiService {
 
     return list.map((e) => model.Category.fromJson(e)).toList();
   }
+
+
+  static Future<List<Infographic>>? _infographicCache;
+
+  Future<List<Infographic>> getInfographicCached() {
+    _infographicCache ??= _fetchInfographic();
+    return _infographicCache!;
+  }
+
+   Future<List<Infographic>> _fetchInfographic() async {
+    final res = await _dio.get('/infographic');
+
+    return (res.data['data'] as List)
+        .map((json) => Infographic.fromJson(json))
+        .toList();
+  }
 }

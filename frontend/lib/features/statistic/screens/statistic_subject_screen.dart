@@ -57,7 +57,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
                   title: const Text(
                     'Tabel Statistik',
                     style: TextStyle(
-                      fontSize: 22, // Sedikit lebih besar untuk kesan modern
+                      fontSize: 18, // Sedikit lebih besar untuk kesan modern
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF007AFF),
                     ),

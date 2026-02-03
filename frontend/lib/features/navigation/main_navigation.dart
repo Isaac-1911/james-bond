@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:frontend/features/publication/publication_list_screen.dart';
 import 'package:frontend/features/statistic/screens/statistic_subject_screen.dart';
 import '../home/home_screen.dart';
@@ -20,100 +21,169 @@ class _MainNavigationState extends State<MainNavigation> {
     });
   }
 
-  void _showMoreMenu(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (_) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+ void _showMoreMenu(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (_) {
+      return Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.white.withOpacity(0.95), // Futuristic glassmorphism effect
+              Colors.blue.shade50.withOpacity(0.9),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          child: SafeArea(
-            top: false,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // drag handle
-                Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              spreadRadius: 5,
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Enhanced drag handle with futuristic glow
+              Container(
+                width: 50,
+                height: 6,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade300.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.shade300.withOpacity(0.5),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+              ),
+
+              // Title for the menu, inspired by BPS (Badan Pusat Statistik) theme
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'James Bond Menu',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue.shade800,
+                    letterSpacing: 1.2,
                   ),
                 ),
+              ),
 
-                _menuItem(
-                  icon: Icons.notifications_none,
-                  title: 'Notifikasi',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                _menuItem(
-                  icon: Icons.newspaper_outlined,
-                  title: 'Berita Resmi Statistik',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                _menuItem(
-                  icon: Icons.calendar_today_outlined,
-                  title: 'Rencana Terbit',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                _menuItem(
-                  icon: Icons.image_outlined,
-                  title: 'Infografis',
-                  onTap: () {
-                    Navigator.pop(context);
-                    switchTab(4);
-                  },
-                ),
-                _menuItem(
-                  icon: Icons.article_outlined,
-                  title: 'Berita Kegiatan',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                _menuItem(
-                  icon: Icons.info_outline,
-                  title: 'Tentang Kami',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
+              // Menu items with enhanced styling
+              _menuItem(
+                icon: Icons.notifications_none,
+                title: 'Notifikasi',
+                onTap: () {
+                  Navigator.pop(context);
+                  // Add navigation logic here
+                },
+              ),
+              _menuItem(
+                icon: Icons.newspaper_outlined,
+                title: 'Berita Resmi Statistik',
+                onTap: () {
+                  Navigator.pop(context);
+                  // Add navigation logic here
+                },
+              ),
+              _menuItem(
+                icon: Icons.calendar_today_outlined,
+                title: 'Rencana Terbit',
+                onTap: () {
+                  Navigator.pop(context);
+                  // Add navigation logic here
+                },
+              ),
+              _menuItem(
+                icon: Icons.image_outlined,
+                title: 'Infografis',
+                onTap: () {
+                  Navigator.pop(context);
+                  switchTab(4); // Assuming switchTab is defined elsewhere
+                },
+              ),
+              _menuItem(
+                icon: Icons.article_outlined,
+                title: 'Berita Kegiatan',
+                onTap: () {
+                  Navigator.pop(context);
+                  // Add navigation logic here
+                },
+              ),
+              _menuItem(
+                icon: Icons.info_outline,
+                title: 'Tentang Kami',
+                onTap: () {
+                  Navigator.pop(context);
+                  // Add navigation logic here
+                },
+              ),
+            ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
-  Widget _menuItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Icon(icon, size: 22),
+Widget _menuItem({
+  required IconData icon,
+  required String title,
+  required VoidCallback onTap,
+}) {
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 4),
+    decoration: BoxDecoration(
+      color: Colors.white.withOpacity(0.8),
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.blue.shade100.withOpacity(0.3),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.blue.shade100.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, size: 24, color: Colors.blue.shade700),
+      ),
       title: Text(
         title,
-        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: Colors.blue.shade900,
+        ),
       ),
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-    );
-  }
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+    ),
+  );
+}
 
   late final List<Widget> _pages = [
     HomeScreen(onNavigate: switchTab),
@@ -127,79 +197,66 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F7), // Background iOS-like
-      body: IndexedStack(index: _currentIndex, children: _pages),
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 16,
-        ), // Margin untuk kesan floating
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(24), // Rounded lebih besar
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 16,
-              offset: const Offset(0, -4),
-            ),
-          ],
+  backgroundColor: const Color(0xFFF2F2F7),
+  body: IndexedStack(index: _currentIndex, children: _pages),
+  bottomNavigationBar: Container(
+    margin: const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 12,
+    ),
+    decoration: BoxDecoration(
+      color: Colors.white.withOpacity(0.9),
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 12,
+          offset: const Offset(0, -3),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              if (index == 4) {
-                _showMoreMenu(context);
-                return;
-              }
-              switchTab(index);
-            },
-
-            type: BottomNavigationBarType.fixed,
-            showSelectedLabels: true, // Tampilkan label untuk kesan premium
-            showUnselectedLabels: true,
-            backgroundColor: Colors
-                .transparent, // Background transparan untuk custom container
-            elevation:
-                0, // Elevation dihapus karena sudah ada shadow di container
-            selectedItemColor: const Color(0xFF007AFF), // Warna biru iOS
-            unselectedItemColor: Colors.grey.shade500,
-            selectedLabelStyle: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF007AFF),
-            ),
-            unselectedLabelStyle: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home, size: 28), // Icon lebih besar
-                label: 'Beranda',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.table_chart_outlined, size: 28),
-                label: 'Tabel',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.search, size: 28),
-                label: 'Cari',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.menu_book_outlined, size: 28),
-                label: 'Publikasi',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.menu, size: 28),
-                label: 'Lainnya',
-              ),
-            ],
+      ],
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: GNav(
+        selectedIndex: _currentIndex,
+        onTabChange: (index) {
+          if (index == 4) {
+            _showMoreMenu(context);
+            return;
+          }
+          switchTab(index);
+        },
+        backgroundColor: Colors.transparent,
+        color: Colors.grey.shade500,
+        activeColor: const Color(0xFF007AFF),
+        tabBackgroundColor: const Color(0xFF007AFF).withOpacity(0.1),
+        gap: 4,
+        padding: const EdgeInsets.all(12),
+        tabs: const [
+          GButton(
+            icon: Icons.home_outlined,
+            text: 'Beranda',
           ),
-        ),
+          GButton(
+            icon: Icons.table_chart_outlined,
+            text: 'Tabel',
+          ),
+          GButton(
+            icon: Icons.search_outlined,
+            text: 'Cari',
+          ),
+          GButton(
+            icon: Icons.menu_book_outlined,
+            text: 'Publikasi',
+          ),
+          GButton(
+            icon: Icons.menu_outlined,
+            text: 'Lainnya',
+          ),
+        ],
       ),
-    );
+    ),
+  ),
+);
   }
 }

@@ -152,7 +152,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
                   title: const Text(
                     'Publikasi',
                     style: TextStyle(
-                      fontSize: 22, // Sedikit lebih besar untuk kesan modern
+                      fontSize: 18, // Sedikit lebih besar untuk kesan modern
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF007AFF),
                     ),
@@ -174,16 +174,16 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
               child: Column(
                 children: [
-                  Row(
-                    children: const [
-                      Icon(Icons.place, size: 20, color: Colors.grey), // Ikon sedikit lebih besar
-                      SizedBox(width: 8),
-                      Text(
-                        'BPS Kabupaten Bondowoso',
-                        style: TextStyle(color: Colors.grey, fontSize: 14),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: const [
+                  //     Icon(Icons.place, size: 20, color: Colors.grey), // Ikon sedikit lebih besar
+                  //     SizedBox(width: 8),
+                  //     Text(
+                  //       'BPS Kabupaten Bondowoso',
+                  //       style: TextStyle(color: Colors.grey, fontSize: 14),
+                  //     ),
+                  //   ],
+                  // ),
                   const SizedBox(height: 16),
                   Row(
                     children: [

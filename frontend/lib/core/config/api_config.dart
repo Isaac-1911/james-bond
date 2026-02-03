@@ -6,7 +6,7 @@ class ApiConfig {
   // static String get baseUrl => '$host/api';
   // static String get storageUrl => '$host/storage';
 
-  static const String storageUrl = 'http://192.168.1.46:8000/storage';
+  static const String storageUrl = 'http://192.168.0.110:8000/storage';
   // static String storageUrl =
   //     "http://${dotenv.env['API_BASE_URL']}:8000/storage";
 
