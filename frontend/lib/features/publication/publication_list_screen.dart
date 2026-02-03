@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/category.dart';
 import '../../models/publication.dart';
@@ -74,43 +75,42 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
   }
 
   Future<void> _fetchPublications() async {
+    if (_isLoading || !_hasMore) {
+      return;
+    }
 
-  if (_isLoading || !_hasMore) {
-    return;
-  }
+    try {
+      if (!mounted) return;
 
-  try {
-    if (!mounted) return;
+      setState(() => _isLoading = true);
+      final result = await _apiService.getPublications(
+        page: _page,
+        limit: _limit,
+        query: _query.isEmpty ? null : _query,
+        sort: _sort,
+        category: _category,
+      );
+      final List<Publication> newItems = result['items'];
+      final int currentPage = result['currentPage'];
+      final int lastPage = result['lastPage'];
 
-    setState(() => _isLoading = true);
-    final result = await _apiService.getPublications(
-      page: _page,
-      limit: _limit,
-      query: _query.isEmpty ? null : _query,
-      sort: _sort,
-      category: _category,
-    );
-    final List<Publication> newItems = result['items'];
-    final int currentPage = result['currentPage'];
-    final int lastPage = result['lastPage'];
+      if (!mounted) return;
 
-    if (!mounted) return;
+      setState(() {
+        _publications.addAll(newItems);
+        _page++;
+        _hasMore = currentPage < lastPage;
+        _isLoading = false;
+      });
+    } catch (e, stackTrace) {
+      debugPrint('❌ FETCH ERROR: $e');
+      debugPrint('$stackTrace');
 
-    setState(() {
-      _publications.addAll(newItems);
-      _page++;
-      _hasMore = currentPage < lastPage;
-      _isLoading = false;
-    });
-  } catch (e, stackTrace) {
-    debugPrint('❌ FETCH ERROR: $e');
-    debugPrint('$stackTrace');
-
-    if (mounted) {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
-}
 
   void _onSearchSubmit(String value) {
     _query = value.trim();
@@ -132,159 +132,211 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F7),
-      appBar: AppBar(
-        automaticallyImplyLeading: false, // ⬅️ KUNCI
-        title: const Text(
-          'Publikasi',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF007AFF),
+      // Background gradien futuristik (dari putih ke abu-abu halus)
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFF2F2F7), Color(0xFFE5E5EA)],
           ),
         ),
-        backgroundColor: Colors.white.withOpacity(0.8),
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          // ===== HEADER SEARCH =====
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-            child: Column(
-              children: [
-                Row(
-                  children: const [
-                    Icon(Icons.place, size: 18, color: Colors.grey),
-                    SizedBox(width: 8),
-                    Text(
-                      'BPS Kabupaten Bondowoso',
-                      style: TextStyle(color: Colors.grey),
+        child: Column(
+          children: [
+            // ===== APPBAR DENGAN EFEK BLUR DAN GRADIEN (FUTURISTIK) =====
+            ClipRRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Efek blur glassmorphism
+                child: AppBar(
+                  automaticallyImplyLeading: false,
+                  title: const Text(
+                    'Publikasi',
+                    style: TextStyle(
+                      fontSize: 22, // Sedikit lebih besar untuk kesan modern
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF007AFF),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        textInputAction: TextInputAction.search,
-                        onSubmitted: _onSearchSubmit,
-                        decoration: InputDecoration(
-                          hintText: 'Cari Publikasi di sini',
-                          prefixIcon: const Icon(Icons.search),
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.close),
-                                  onPressed: _clearSearch,
-                                )
-                              : null,
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
+                  ),
+                  backgroundColor: Colors.white.withOpacity(0.8), // Transparan untuk blur
+                  elevation: 0,
+                  flexibleSpace: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.white, Color(0xFFE0E0E0)], // Gradien halus
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.tune),
-                      label: const Text('Filter'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF007AFF),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ],
+              ),
             ),
-          ),
 
-          // ===== SEGMENT =====
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _buildSegment(),
-          ),
-
-          const SizedBox(height: 20),
-
-          // ===== LIST =====
-          Expanded(
-            child: Builder(
-              builder: (context) {
-                // ===== SHIMMER (FIRST LOAD) =====
-                if (_isLoading && _publications.isEmpty) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: 6,
-                    itemBuilder: (_, __) => const PublicationCardShimmer(),
-                  );
-                }
-
-                // ===== EMPTY STATE =====
-                if (_publications.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'Publikasi tidak ditemukan',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  );
-                }
-
-                // ===== NORMAL LIST + PAGINATION =====
-                return ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: _publications.length + (_hasMore ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == _publications.length) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        child: Center(
-                          child: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+              child: Column(
+                children: [
+                  Row(
+                    children: const [
+                      Icon(Icons.place, size: 20, color: Colors.grey), // Ikon sedikit lebih besar
+                      SizedBox(width: 8),
+                      Text(
+                        'BPS Kabupaten Bondowoso',
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4), // Shadow futuristik
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            textInputAction: TextInputAction.search,
+                            onSubmitted: _onSearchSubmit,
+                            decoration: InputDecoration(
+                              hintText: 'Cari Publikasi di sini',
+                              prefixIcon: const Icon(Icons.search, color: Color(0xFF007AFF)),
+                              suffixIcon: _searchController.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(Icons.close, color: Colors.grey),
+                                      onPressed: _clearSearch,
+                                    )
+                                  : null,
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24), // Lebih rounded untuk futuristik
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                            ),
                           ),
                         ),
-                      );
-                    }
+                      ),
+                      const SizedBox(width: 16),
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF007AFF), Color(0xFF0056CC)], // Gradien biru futuristik
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF007AFF).withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.tune, color: Colors.white),
+                          label: const Text('Filter', style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent, // Transparan untuk gradien
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
 
-                    final publication = _publications[index];
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildSegment(),
+            ),
 
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => PublicationDetailScreen(
-                              publication: publication,
+            const SizedBox(height: 20),
+
+            Expanded(
+              child: Builder(
+                builder: (context) {
+                  if (_isLoading && _publications.isEmpty) {
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: 6,
+                      itemBuilder: (_, __) => const PublicationCardShimmer(),
+                    );
+                  }
+
+                  if (_publications.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'Publikasi tidak ditemukan',
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: _publications.length + (_hasMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == _publications.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF007AFF)),
+                              ),
                             ),
                           ),
                         );
-                      },
-                      child: PublicationCard(
-                        title: publication.title,
-                        date: publication.releaseDate ?? '',
-                        coverUrl: publication.coverUrl != null
-                            ? '${ApiConfig.storageUrl}/${publication.coverUrl}'
-                            : null,
-                      ),
-                    );
-                  },
-                );
-              },
+                      }
+
+                      final publication = _publications[index];
+
+                      return AnimatedOpacity(
+                        opacity: 1.0, // Fade-in sederhana; bisa diperbaiki dengan AnimationController
+                        duration: const Duration(milliseconds: 500),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => PublicationDetailScreen(
+                                  publication: publication,
+                                ),
+                              ),
+                            );
+                          },
+                          child: PublicationCard(
+                            title: publication.title,
+                            date: publication.releaseDate ?? '',
+                            coverUrl: publication.coverUrl != null
+                                ? '${ApiConfig.storageUrl}/${publication.coverUrl}'
+                                : null,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -299,95 +351,51 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
     return MediaQuery.of(context).size.width / 3;
   }
 
-  Widget _segmentButton(String label, int index) {
-    final bool isActive = _segmentIndex == index;
-    final bool isDisabled = label == 'Utama' && _utamaCategoryId == null;
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: isDisabled
-            ? null
-            : () {
-                setState(() {
-                  _segmentIndex = index;
-
-                  _page = 1;
-                  _hasMore = true;
-                  _publications.clear();
-
-                  if (index == 0) {
-                    // Semua
-                    _sort = null;
-                    _category = null;
-                  } else if (index == 1) {
-                    // Populer
-                    _sort = 'popular';
-                    _category = null;
-                  } else if (index == 2) {
-                    // Utama
-                    _sort = null;
-                    _category = _utamaCategoryId;
-                  }
-                });
-
-                _fetchPublications();
-              },
-        child: Opacity(
-          opacity: isDisabled ? 0.4 : 1,
-          child: Container(
-            margin: const EdgeInsets.all(4),
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: isActive ? const Color(0xFF007AFF) : Colors.transparent,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Center(
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: isActive ? Colors.white : Colors.grey,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildSegment() {
     return Container(
-      height: 44,
+      height: 48, // Sedikit lebih tinggi untuk kesan premium
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: const Color(0xFFE5E5EA),
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24), // Lebih rounded
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Stack(
         children: [
-          // ===== SLIDING INDICATOR =====
           LayoutBuilder(
             builder: (context, constraints) {
               final segmentWidth = constraints.maxWidth / 3;
 
               return AnimatedAlign(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeOut,
+                duration: const Duration(milliseconds: 300), // Lebih smooth
+                curve: Curves.easeInOut,
                 alignment: _segmentAlignment(),
                 child: Container(
-                  width: segmentWidth, // ✅ FIX
+                  width: segmentWidth,
                   height: double.infinity,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF007AFF),
-                    borderRadius: BorderRadius.circular(18),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF007AFF), Color(0xFF0056CC)], // Gradien pada indicator
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF007AFF).withOpacity(0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                 ),
               );
             },
           ),
-
-          // ===== BUTTONS =====
           Row(
             children: [
               _segmentItem('Semua', 0),
@@ -411,7 +419,6 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
             : () {
                 setState(() {
                   _segmentIndex = index;
-
                   _page = 1;
                   _hasMore = true;
                   _publications.clear();
@@ -427,7 +434,6 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
                     _category = _utamaCategoryId;
                   }
                 });
-
                 _fetchPublications();
               },
         child: Opacity(
@@ -436,7 +442,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 15, // Sedikit lebih besar
                 fontWeight: FontWeight.w600,
                 color: isActive ? Colors.white : Colors.black54,
               ),
