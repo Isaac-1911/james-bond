@@ -16,7 +16,8 @@ import 'widgets/news_carousel_shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(int) onNavigate;
-  const HomeScreen({super.key, required this.onNavigate});
+  final Function(String) onOpenLainnya;
+  const HomeScreen({super.key, required this.onNavigate, required this.onOpenLainnya});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -188,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     children: [
                       CarouselSlider(
                         options: CarouselOptions(
-                          height: 180, // Sedikit lebih tinggi
+                          height: 180,
                           autoPlay: true,
                           enlargeCenterPage: true,
                           autoPlayInterval: const Duration(seconds: 4),
@@ -258,14 +259,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         icon: Icons.image,
                         label: 'Infografis',
                         onTap: () {
-                          widget.onNavigate(4);
+                          widget.onOpenLainnya('infografis');
                         },
                       ),
                       _QuickMenuItem(
                         icon: Icons.article,
                         label: 'BRS',
                         onTap: () {
-                          widget.onNavigate(4);
+                          widget.onOpenLainnya('brs');
                         },
                       ),
                     ],
@@ -386,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                           TextButton(
                             onPressed: () {
-                              widget.onNavigate(4);
+                              widget.onOpenLainnya('infografis');
                             },
                             child: const Text(
                               'Lihat Semua',
@@ -435,7 +436,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   imageUrl:
                                       '${ApiConfig.storageUrl}/${item.image_url}',
                                   onTap: () {
-                                    widget.onNavigate(4); // ke tab Infografis
+                                    widget.onOpenLainnya('infografis'); 
                                   },
                                 );
                               },

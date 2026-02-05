@@ -1,162 +1,164 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:frontend/features/news/news_list_screen.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:frontend/features/publication/publication_list_screen.dart';
-import 'package:frontend/features/statistic/screens/statistic_subject_screen.dart';
-import 'package:cupertino_icons/cupertino_icons.dart';
 import '../home/home_screen.dart';
+import '../statistic/screens/statistic_subject_screen.dart';
+import '../publication/publication_list_screen.dart';
 import '../infographic/infographic_screen.dart';
+import '../release_plan/release_plan_screen.dart';
+import 'package:frontend/features/common/simple_page.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
-
   @override
   State<MainNavigation> createState() => _MainNavigationState();
 }
 
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
-
+  String _lainnyaPage = 'infografis';
   void switchTab(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
 
+  void openLainnya(String page) {
+    setState(() {
+      _currentIndex = 4;
+      _lainnyaPage = page;
+    });
+  }
+
   void _showMoreMenu(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    builder: (_) {
-      return Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.95),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 36,
-                height: 5,
-                margin: const EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(2.5),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text(
-                  'James Bond Menu',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              _menuItem(
-                icon: CupertinoIcons.bell,
-                title: 'Notifikasi',
-                onTap: () {
-                  Navigator.pop(context);
-                  // Add navigation logic here
-                },
-              ),
-              _menuItem(
-                icon: CupertinoIcons.news,
-                title: 'Berita Resmi Statistik',
-                onTap: () {
-                  Navigator.pop(context);
-                  // Add navigation logic here
-                },
-              ),
-              _menuItem(
-                icon: CupertinoIcons.calendar,
-                title: 'Rencana Terbit',
-                onTap: () {
-                  Navigator.pop(context);
-                  // Add navigation logic here
-                },
-              ),
-              _menuItem(
-                icon: CupertinoIcons.photo,
-                title: 'Infografis',
-                onTap: () {
-                  Navigator.pop(context);
-                  switchTab(4); // Assuming switchTab is defined elsewhere
-                },
-              ),
-              _menuItem(
-                icon: CupertinoIcons.doc_text,
-                title: 'Berita Kegiatan',
-                onTap: () {
-                  Navigator.pop(context);
-                  // Add navigation logic here
-                },
-              ),
-              _menuItem(
-                icon: CupertinoIcons.info,
-                title: 'Tentang Kami',
-                onTap: () {
-                  Navigator.pop(context);
-                  // Add navigation logic here
-                },
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.95),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
               ),
             ],
           ),
-        ),
-      );
-    },
-  );
-}
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 36,
+                  height: 5,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade400,
+                    borderRadius: BorderRadius.circular(2.5),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    'Lainnya',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                _menuItem(
+                  icon: CupertinoIcons.calendar,
+                  title: 'Rencana Terbit',
+                  onTap: () {
+                    Navigator.pop(context);
+                    openLainnya('rencana-terbit');
+                  },
+                ),
+                _menuItem(
+                  icon: CupertinoIcons.photo,
+                  title: 'Infografis',
+                  onTap: () {
+                    Navigator.pop(context);
+                    openLainnya('infografis');
+                  },
+                ),
+                _menuItem(
+                  icon: CupertinoIcons.bell,
+                  title: 'Notifikasi',
+                  onTap: () {
+                    Navigator.pop(context);
+                    openLainnya('notifikasi');
+                  },
+                ),
+                _menuItem(
+                  icon: CupertinoIcons.news,
+                  title: 'Berita Resmi Statistik',
+                  onTap: () {
+                    Navigator.pop(context);
+                    openLainnya('brs');
+                  },
+                ),
+                _menuItem(
+                  icon: CupertinoIcons.doc_text,
+                  title: 'Berita Kegiatan',
+                  onTap: () {
+                    Navigator.pop(context);
+                    openLainnya('berita-kegiatan');
+                  },
+                ),
+                _menuItem(
+                  icon: CupertinoIcons.info,
+                  title: 'Tentang Kami',
+                  onTap: () {
+                    Navigator.pop(context);
+                    openLainnya('tentang-kami');
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-Widget _menuItem({
-  required IconData icon,
-  required String title,
-  required VoidCallback onTap,
-}) {
-  return Container(
-    margin: const EdgeInsets.symmetric(vertical: 4),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: ListTile(
-      leading: Icon(icon, size: 24, color: const Color(0xFF007AFF)),
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Colors.black,
+  Widget _menuItem({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        leading: Icon(icon, size: 24, color: const Color(0xFF007AFF)),
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        onTap: onTap,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
         ),
       ),
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    ),
-  );
-}
+    );
+  }
 
-  late final List<Widget> _pages = [
-    HomeScreen(onNavigate: switchTab),
+  List<Widget> get _pages => [
+    HomeScreen(onNavigate: switchTab, onOpenLainnya: openLainnya,),
     const StatisticSubjectScreen(),
     const Center(child: Text('Cari')),
     const PublicationListScreen(),
-    const InfographicScreen(),
+    _buildLainnyaPage(), // TAB "LAINNYA"
   ];
 
   @override
@@ -205,5 +207,30 @@ Widget _menuItem({
         ),
       ),
     );
+  }
+
+  Widget _buildLainnyaPage() {
+    switch (_lainnyaPage) {
+      case 'rencana-terbit':
+        return const ReleasePlanScreen();
+
+      case 'infografis':
+        return const InfographicScreen();
+
+      case 'notifikasi':
+        return const SimplePage(title: 'Notifikasi');
+
+      case 'brs':
+        return const NewsListScreen();
+
+      case 'berita-kegiatan':
+        return const SimplePage(title: 'Berita Kegiatan');
+
+      case 'tentang-kami':
+        return const SimplePage(title: 'Tentang Kami');
+
+      default:
+        return const InfographicScreen();
+    }
   }
 }

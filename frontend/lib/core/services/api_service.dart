@@ -6,6 +6,7 @@ import '../../models/news.dart';
 import '../../models/publication.dart';
 import '../../models/infographic.dart';
 import '../../models/statistic_data.dart';
+import '../../models/release_plan.dart';
 
 class ApiService {
   final Dio _dio = Dio(
@@ -15,11 +16,48 @@ class ApiService {
     ),
   );
 
-  Future<List<News>> getNews() async {
+  // Future<List<News>> getNews() async {
+  //   final response = await _dio.get('/news');
+
+  //   final List data = response.data['data'];
+  //   return data.map((e) => News.fromJson(e)).toList();
+  // }
+
+  Future<List<News>> getNews({
+  String? query,
+}) async {
+  try {
     final response = await _dio.get('/news');
 
+    debugPrint('🟢 GET /news → ${response.statusCode}');
+
     final List data = response.data['data'];
-    return data.map((e) => News.fromJson(e)).toList();
+
+    List<News> items =
+        data.map((e) => News.fromJson(e)).toList();
+
+    // 🔎 OPTIONAL: client-side search (AMAN)
+    if (query != null && query.isNotEmpty) {
+      final q = query.toLowerCase();
+      items = items
+          .where((n) => n.title.toLowerCase().contains(q))
+          .toList();
+    }
+
+    return items;
+  } catch (e, stackTrace) {
+    debugPrint('❌ GET /news ERROR: $e');
+    debugPrint('$stackTrace');
+    rethrow;
+  }
+}
+
+  Future<List<Infographic>> getInfographic() async {
+    final res = await _dio.get('/infographic');
+
+    return (res.data['data'] as List)
+        .map((json) => Infographic.fromJson(json))
+        .toList();
   }
 
   Future<Map<String, dynamic>> getPublications({
@@ -62,13 +100,13 @@ class ApiService {
     };
   }
 
-  Future<List<Infographic>> getInfographic() async {
-    final res = await _dio.get('/infographic');
+  // Future<List<Infographic>> getInfographic() async {
+  //   final res = await _dio.get('/infographic');
 
-    return (res.data['data'] as List)
-        .map((json) => Infographic.fromJson(json))
-        .toList();
-  }
+  //   return (res.data['data'] as List)
+  //       .map((json) => Infographic.fromJson(json))
+  //       .toList();
+  // }
 
   Future<List<StatisticData>> getStatistic() async {
     final res = await _dio.get('/statistics');
@@ -86,7 +124,6 @@ class ApiService {
     return list.map((e) => model.Category.fromJson(e)).toList();
   }
 
-
   static Future<List<Infographic>>? _infographicCache;
 
   Future<List<Infographic>> getInfographicCached() {
@@ -94,11 +131,29 @@ class ApiService {
     return _infographicCache!;
   }
 
-   Future<List<Infographic>> _fetchInfographic() async {
+  Future<List<Infographic>> _fetchInfographic() async {
     final res = await _dio.get('/infographic');
 
     return (res.data['data'] as List)
         .map((json) => Infographic.fromJson(json))
         .toList();
+  }
+
+  Future<List<ReleasePlan>> getReleasePlans() async {
+    final res = await _dio.get('/release-plans');
+
+    final List list = res.data['data'];
+
+    return list.map((e) => ReleasePlan.fromJson(e)).toList();
+  }
+
+  Future<Publication> getPublicationById(int id) async {
+    final res = await _dio.get('/publication/$id');
+    return Publication.fromJson(res.data['data']);
+  }
+
+  Future<News> getNewsById(int id) async {
+    final res = await _dio.get('/news/$id');
+    return News.fromJson(res.data['data']);
   }
 }

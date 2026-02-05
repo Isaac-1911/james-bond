@@ -353,11 +353,11 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
 
   Widget _buildSegment() {
     return Container(
-      height: 48, // Sedikit lebih tinggi untuk kesan premium
+      height: 48, 
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: const Color(0xFFE5E5EA),
-        borderRadius: BorderRadius.circular(24), // Lebih rounded
+        borderRadius: BorderRadius.circular(24), 
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -442,7 +442,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 15, // Sedikit lebih besar
+                fontSize: 15, 
                 fontWeight: FontWeight.w600,
                 color: isActive ? Colors.white : Colors.black54,
               ),

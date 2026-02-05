@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\StatisticDataController;
@@ -9,11 +8,10 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\InfographicController;
 use App\Http\Controllers\SearchHistoryController;
-use App\Http\Controllers\Api\StatisticController;
 use App\Http\Controllers\Api\StatisticTableController;
 use App\Http\Controllers\Api\StatisticSubjectController;
 use App\Http\Controllers\Api\StatisticSubsubjectController;
-
+use App\Http\Controllers\ReleasePlanController;
 
 
 /*
@@ -87,6 +85,8 @@ Route::prefix('/statistic')->group(function () {
 
 Route::get('/statistic/table/{id}', [StatisticTableController::class, 'show']);
 Route::get('/statistic/tables', [StatisticTableController::class, 'indexAll']);
+
+Route::get('/release-plans',[ReleasePlanController::class, 'index']);
 
 
 /*
