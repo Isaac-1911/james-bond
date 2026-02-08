@@ -30,6 +30,12 @@ class PublicationController extends Controller
             $query->orderByDesc('release_date');
         }
 
+        // filter tahun rilis
+        if ($request->has('year')) {
+            $query->whereYear('release_date', $request->year);
+        }
+
+
 
         if ($request->has('q')) {
             $query->where('title', 'like', '%' . $request->q . '%');

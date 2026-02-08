@@ -21,20 +21,56 @@ class ChatController extends Controller
 
         /*
         =====================================================
-        1. BASE SYSTEM PROMPT (IDENTITAS AI)
+        1. BASE SYSTEM PROMPT
         =====================================================
         */
         $baseSystemPrompt = <<<PROMPT
-Kamu adalah Asisten James Bond Data Portal.
+Kamu adalah Asisten Resmi James Bond Data Portal.
 
-James Bond Data Portal adalah aplikasi portal data statistik dan informasi publik,
-bukan tokoh fiksi, bukan film, dan tidak berhubungan dengan agen rahasia.
+Nama kamu adalah Cong Wo alias Kacong Bondowoso
 
-Peran kamu adalah membantu pengguna memahami aplikasi
-dan menjelaskan konteks data yang ditampilkan.
+James Bond Data Portal adalah aplikasi portal data statistik dan informasi publik
+milik instansi pemerintah daerah Kabupaten Bondowoso. Aplikasi ini TIDAK berhubungan dengan tokoh fiksi,
+film, atau agen rahasia.
 
-Kamu tidak menarik kesimpulan numerik
-dan tidak melakukan analisis statistik mendalam.
+Peran kamu adalah sebagai asisten informasi dan panduan pengguna aplikasi.
+Kamu membantu pengguna:
+- memahami fungsi menu dan fitur aplikasi
+- memahami konteks umum data statistik yang ditampilkan
+- memahami tujuan dan kegunaan data bagi publik
+
+Karakter jawaban kamu:
+- informatif
+- jelas
+- tenang
+- netral
+- mudah dipahami oleh masyarakat umum
+
+Batasan penting:
+- Kamu BUKAN analis statistik
+- Kamu TIDAK menarik kesimpulan numerik
+- Kamu TIDAK membandingkan angka
+- Kamu TIDAK melakukan prediksi, tren, atau evaluasi data
+
+Namun, kamu BOLEH:
+- menjelaskan topik data secara umum
+- menjelaskan konteks dan latar belakang data
+- menjelaskan kegunaan data secara wajar
+- membantu pengguna memahami istilah atau struktur data
+
+Gaya bahasa:
+- Bahasa Indonesia formal namun ramah
+- Tidak menggunakan label seperti “Jawaban:” atau “Penjelasan:”
+- Tidak mengulang pertanyaan pengguna
+- Tidak membuka dengan salam atau sapaan umum
+- Jawaban boleh 2–5 kalimat jika diperlukan untuk kejelasan
+
+Struktur berpikir:
+- Pahami dulu maksud pertanyaan
+- Identifikasi apakah pertanyaan terkait fitur aplikasi atau tabel statistik
+- Jawab secara langsung dan kontekstual
+- Akhiri jawaban secara alami tanpa tambahan yang tidak perlu
+
 PROMPT;
 
         /*
@@ -67,10 +103,7 @@ Aturan:
 - Jangan mengulang pertanyaan pengguna
 - Jangan menambahkan label seperti "Jawaban:" atau "Pertanyaan:"
 - Jawaban boleh cukup panjang selama tetap jelas dan informatif
-- Jelaskan:
-  • topik utama tabel
-  • konteks data secara umum
-  • kegunaan data secara wajar
+- Jelaskan topik utama tabel, konteks data, dan kegunaan data secara umum
 - Sebutkan sumber data jika tersedia
 - Jangan menyebutkan angka detail dari tabel
 - Jangan menarik kesimpulan statistik numerik
@@ -84,6 +117,13 @@ Judul: {$table->title}
 Deskripsi: {$table->description}
 Sumber: {$table->source}
 Terakhir diperbarui: {$table->last_updated}
+
+Gunakan konteks ini untuk menjelaskan:
+- topik utama tabel
+- jenis informasi yang disajikan
+- kegunaan data bagi pengguna
+
+Jangan menyebutkan angka atau nilai spesifik dari tabel.
 PROMPT;
         } else {
 
@@ -101,15 +141,18 @@ Aturan:
 PROMPT;
 
             $contextPrompt = <<<PROMPT
-KONTEKS APLIKASI:
+Konteks aplikasi:
 
-Menu utama:
-- Beranda: ringkasan konten terbaru
-- Publikasi: laporan statistik resmi dalam bentuk dokumen
+Menu utama dalam aplikasi:
+- Beranda: menampilkan ringkasan konten terbaru
+- Publikasi: dokumen laporan statistik resmi
 - Statistik: tabel data statistik terstruktur
-- Infografis: visualisasi data
-- Berita Kegiatan
-- Rencana Terbit
+- Infografis: penyajian data dalam bentuk visual
+- Berita Kegiatan: informasi aktivitas dan rilis data
+- Rencana Terbit: jadwal rilis publikasi dan berita statistik
+
+Gunakan konteks ini untuk menjelaskan fungsi menu atau alur penggunaan aplikasi.
+
 PROMPT;
         }
 
@@ -131,48 +174,67 @@ PROMPT;
         =====================================================
         */
         try {
-            $response = Http::timeout(120)->post(
-                'http://127.0.0.1:8080/completion',
-                [
-                    'prompt'      => $finalPrompt,
-                    'n_predict'   => 200,
-                    'temperature' => 0.25,
-                    'stream'      => false,
-                    'stop' => [
-                        "\nPertanyaan:",
-                        "\nPERTANYAAN",
-                    ],
 
-                ]
-            );
-
-            $answer = trim($response['content'] ?? '');
-
+            // =================================================
+            // LLAMA.CPP (DISIMPAN UNTUK FUTURE / FALLBACK)
+            // =================================================
             /*
-            =====================================================
-            6. LIGHT SANITIZER (KOSMETIK SAJA)
-            =====================================================
-            */
-            $answer = preg_replace('/^(jawaban\s*:)\s*/i', '', $answer);
-            $answer = preg_replace('/(pertanyaan|question)\s*:.*$/is', '', $answer);
+    $response = Http::timeout(120)->post(
+        'http://127.0.0.1:8080/completion',
+        [
+            'prompt'      => $finalPrompt,
+            'n_predict'   => 200,
+            'temperature' => 0.25,
+            'stream'      => false,
+        ]
+    );
+
+    $answer = trim($response['content'] ?? '');
+    */
+
+            // =================================================
+            // GEMINI (PRIMARY ENGINE)
+            // =================================================
+            $response = Http::timeout(30)
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'X-Goog-Api-Key' => config('services.gemini.key'),
+                ])
+                ->post(
+                    'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash-lite:generateContent',
+                    [
+                        'contents' => [
+                            [
+                                'role' => 'user',
+                                'parts' => [
+                                    ['text' => $finalPrompt],
+                                ],
+                            ],
+                        ],
+                        'generationConfig' => [
+                            'temperature' => 0.35,
+                            'maxOutputTokens' => 600,
+                        ],
+                    ]
+                );
+
+            $data = $response->json();
+
+            $answer = '';
+
+            if (!empty($data['candidates'][0]['content']['parts'])) {
+                foreach ($data['candidates'][0]['content']['parts'] as $part) {
+                    if (isset($part['text'])) {
+                        $answer .= $part['text'];
+                    }
+                }
+            }
+
             $answer = trim($answer);
 
             if ($answer === '') {
                 $answer = 'Informasi tersedia dalam aplikasi, namun belum dapat dijelaskan lebih lanjut oleh asisten.';
             }
-
-            if ($mode === 'guide') {
-                $replacements = [
-                    'melakukan analisis statistik' => 'memahami data secara umum',
-                    'melihat trend' => 'melihat gambaran umum data',
-                    'mengambil keputusan data-driven' => 'sebagai bahan referensi informasi',
-                ];
-
-                foreach ($replacements as $from => $to) {
-                    $answer = str_ireplace($from, $to, $answer);
-                }
-            }
-
 
             return response()->json([
                 'answer' => $answer

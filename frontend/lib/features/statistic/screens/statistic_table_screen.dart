@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import '../../../core/services/statistic_api_service.dart';
 import '../../../models/statistic_table.dart';
+import '../widgets/assistant_bottom_sheet.dart';
 import 'package:frontend/models/statistic_table_column.dart';
 import 'package:frontend/models/statistic_table_row.dart';
 import 'package:intl/intl.dart';
@@ -40,6 +41,15 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
     _horizontalScrollController.dispose();
     _verticalScrollController.dispose();
     super.dispose();
+  }
+
+  void _openAssistantBottomSheet(int tableId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => AssistantBottomSheet(tableId: tableId, tableTitle: widget.title),
+    );
   }
 
   @override
@@ -298,7 +308,9 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                   ),
                 ],
                 const SizedBox(height: 16),
-                Row(
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -318,7 +330,6 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -337,8 +348,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                         ),
                       ),
                     ),
-                    if (table.lastUpdated != null) ...[
-                      const SizedBox(width: 8),
+                    if (table.lastUpdated != null)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -349,6 +359,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             const Icon(
                               Icons.update_rounded,
@@ -367,8 +378,102 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                           ],
                         ),
                       ),
-                    ],
                   ],
+                ),
+                const SizedBox(height: 16),
+
+                // ===============================
+                // BLOK TANYA ASISTEN
+                // ===============================
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF007AFF).withOpacity(0.05),
+                        const Color(0xFF34C759).withOpacity(0.05),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: const Color(0xFF007AFF).withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF007AFF).withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.smart_toy_rounded,
+                          size: 20,
+                          color: Color(0xFF007AFF),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Butuh bantuan?',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF1D1D1F),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Asisten AI siap membantu memahami data tabel ini',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      SizedBox(
+                        height: 36,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _openAssistantBottomSheet(table.id!);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF007AFF),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            'Tanya',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

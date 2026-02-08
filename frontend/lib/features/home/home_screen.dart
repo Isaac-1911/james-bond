@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:frontend/models/publication.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:ionicons/ionicons.dart';
 import '../notification/notification_screen.dart';
 import '../../core/services/api_service.dart';
 import '../../core/config/api_config.dart';
@@ -101,12 +102,55 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final isTablet = screenWidth > 600; // Breakpoint untuk tablet
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF007AFF),
-        child: const Icon(Icons.feedback_outlined),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Color(0xFF667EEA),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        hoverElevation: 0,
+        highlightElevation: 0,
+        extendedPadding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 12,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
         onPressed: () {
           _openFeedbackModal(context);
         },
+        label: Row(
+          children: [
+            Container(
+              // decoration: BoxDecoration(
+              //   gradient: LinearGradient(
+              //     colors: [const Color(0xFF667EEA), const Color(0xFF764BA2)],
+              //     begin: Alignment.topLeft,
+              //     end: Alignment.bottomRight,
+              //   ),
+              //   shape: BoxShape.circle,
+              //   boxShadow: [
+              //     BoxShadow(
+              //       color: const Color(0xFF667EEA).withOpacity(0.4),
+              //       blurRadius: 12,
+              //       spreadRadius: 2,
+              //       offset: const Offset(0, 4),
+              //     ),
+              //   ],
+              // ),
+              child: const Padding(
+                padding: EdgeInsets.all(10),
+                child: Icon(Icons.rocket_launch_outlined, size: 20),
+              ),
+            ),
+            // const SizedBox(width: 12),
+            // const Text(
+            //   'Kirim Feedback',
+            //   style: TextStyle(
+            //     fontSize: 14,
+            //     fontWeight: FontWeight.w600,
+            //     letterSpacing: 0.5,
+            //   ),
+            // ),
+          ],
+        ),
       ),
 
       backgroundColor: const Color(0xFFF2F2F7),
@@ -127,80 +171,112 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       vertical: 16,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white,
                       borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
+                        bottomLeft: Radius.circular(24),
+                        bottomRight: Radius.circular(24),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          color: Colors.white.withOpacity(0.1),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'James Bond',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF007AFF),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'James Bond',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF1D1D1F),
+                                  ),
                                 ),
-                              ),
-                              Row(
-                                children: [
-                                  // Container(
-                                  //   decoration: BoxDecoration(
-                                  //     shape: BoxShape.circle,
-                                  //     border: Border.all(
-                                  //       color: Colors.blue.shade200,
-                                  //       width: 1.5,
-                                  //     ),
-                                  //   ),
-                                  //   child: CircleAvatar(
-                                  //     radius: 20,
-                                  //     backgroundColor: Colors.blue.shade50,
-                                  //     child: const Icon(
-                                  //       CupertinoIcons.person,
-                                  //       color: Color(0xFF007AFF),
-                                  //       size: 24,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  const SizedBox(width: 16),
-                                  IconButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              const NotificationScreen(),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                // Notification Button
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const NotificationScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.05),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
                                         ),
-                                      );
-                                    },
-                                    icon: const Icon(
-                                      CupertinoIcons.bell,
-                                      color: Color(0xFF007AFF),
-                                      size: 24,
+                                      ],
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        const Center(
+                                          child: Icon(
+                                            CupertinoIcons.bell,
+                                            color: Color(0xFF007AFF),
+                                            size: 22,
+                                          ),
+                                        ),
+                                        // Notification Badge
+                                        Positioned(
+                                          top: 8,
+                                          right: 8,
+                                          child: Container(
+                                            width: 8,
+                                            height: 8,
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xFFFF3B30),
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
-                            ],
+                                ),
+                                const SizedBox(width: 12),
+                                // Profile Avatar
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        // Progress/Status Indicator
+                        Container(
+                          height: 4,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                const Color(0xFF007AFF),
+                                const Color(0xFF007AFF).withOpacity(0.3),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
 
@@ -210,43 +286,127 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CarouselSlider(
-                          options: CarouselOptions(
-                            height: 180,
-                            autoPlay: true,
-                            enlargeCenterPage: true,
-                            autoPlayInterval: const Duration(seconds: 4),
-                            onPageChanged: (index, reason) {
-                              setState(() {
-                                _currentCarouselIndex = index;
-                              });
-                            },
-                          ),
-                          items: _isLoadingNews
-                              ? const [NewsCarouselShimmer()]
-                              : _newsList.map((news) {
-                                  return _buildNewsCarouselItem(news);
-                                }).toList(),
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(_newsList.length, (index) {
-                            return AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              width: _currentCarouselIndex == index ? 14 : 10,
-                              height: 10,
-                              margin: const EdgeInsets.symmetric(horizontal: 6),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: _currentCarouselIndex == index
-                                    ? const Color(0xFF007AFF)
-                                    : Colors.grey.shade400,
+                        // Section Header
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   children: [
+                        //     const Text(
+                        //       'Berita Terbaru',
+                        //       style: TextStyle(
+                        //         fontSize: 18,
+                        //         fontWeight: FontWeight.w700,
+                        //         color: Color(0xFF1D1D1F),
+                        //       ),
+                        //     ),
+                        //     if (_newsList.isNotEmpty && !_isLoadingNews)
+                        //       GestureDetector(
+                        //         onTap: () => widget.onOpenLainnya('brs'),
+                        //         child: const Text(
+                        //           'Lihat Semua',
+                        //           style: TextStyle(
+                        //             fontSize: 14,
+                        //             color: Color(0xFF007AFF),
+                        //             fontWeight: FontWeight.w600,
+                        //           ),
+                        //         ),
+                        //       ),
+                        //   ],
+                        // ),
+                        // const SizedBox(height: 16),
+
+                        // Carousel Container
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 16,
+                                offset: const Offset(0, 8),
                               ),
-                            );
-                          }),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: _isLoadingNews
+                                ? const NewsCarouselShimmer()
+                                : _newsList.isEmpty
+                                ? _buildEmptyNewsState()
+                                : CarouselSlider.builder(
+                                    itemCount: _newsList.length,
+                                    itemBuilder: (context, index, realIndex) {
+                                      return _buildNewsCarouselItem(
+                                        _newsList[index],
+                                      );
+                                    },
+                                    options: CarouselOptions(
+                                      height: 200,
+                                      autoPlay: true,
+                                      enlargeCenterPage: true,
+                                      autoPlayInterval: const Duration(
+                                        seconds: 5,
+                                      ),
+                                      autoPlayAnimationDuration: const Duration(
+                                        milliseconds: 800,
+                                      ),
+                                      autoPlayCurve: Curves.fastOutSlowIn,
+                                      pauseAutoPlayOnTouch: true,
+                                      viewportFraction: 1.0,
+                                      onPageChanged: (index, reason) {
+                                        if (mounted) {
+                                          setState(() {
+                                            _currentCarouselIndex = index;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ),
+                          ),
                         ),
+
+                        const SizedBox(height: 16),
+
+                        if (!_isLoadingNews && _newsList.isNotEmpty)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              _newsList.length,
+                              (index) => GestureDetector(
+                                onTap: () {
+                                  // Optional: Add manual navigation if needed
+                                },
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  width: _currentCarouselIndex == index
+                                      ? 24
+                                      : 8,
+                                  height: 8,
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: _currentCarouselIndex == index
+                                        ? const Color(0xFF007AFF)
+                                        : Colors.grey.shade300,
+                                    boxShadow: _currentCarouselIndex == index
+                                        ? [
+                                            BoxShadow(
+                                              color: const Color(
+                                                0xFF007AFF,
+                                              ).withOpacity(0.3),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ]
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -263,11 +423,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 16,
                       childAspectRatio: 1.0,
-
                       children: [
                         _QuickMenuItem(
                           icon: Icons.book,
                           label: 'Publikasi',
+                          color: const Color(0xFF4E73DF),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFF4E73DF), Color(0xFF224ABE)],
+                          ),
                           onTap: () {
                             widget.onNavigate(3);
                           },
@@ -275,6 +440,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         _QuickMenuItem(
                           icon: Icons.table_chart,
                           label: 'Tabel',
+                          color: const Color(0xFF1CC88A),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFF1CC88A), Color(0xFF13855C)],
+                          ),
                           onTap: () {
                             widget.onNavigate(1);
                           },
@@ -282,6 +453,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         _QuickMenuItem(
                           icon: Icons.image,
                           label: 'Infografis',
+                          color: const Color(0xFFF6C23E),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFFF6C23E), Color(0xFFDDA20A)],
+                          ),
                           onTap: () {
                             widget.onOpenLainnya('infografis');
                           },
@@ -289,6 +466,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         _QuickMenuItem(
                           icon: Icons.article,
                           label: 'BRS',
+                          color: const Color(0xFFE74A3B),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFFE74A3B), Color(0xFFC0281B)],
+                          ),
                           onTap: () {
                             widget.onOpenLainnya('brs');
                           },
@@ -296,7 +479,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 24),
 
                   // ================= SEARCH BAR =================
@@ -353,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF007AFF),
+                            color: Color(0xFF1D1D1F),
                           ),
                         ),
                         TextButton(
@@ -406,7 +588,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF007AFF),
+                                color: Color(0xFF1D1D1F),
                               ),
                             ),
                             TextButton(
@@ -482,7 +664,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF007AFF),
+                                color: Color(0xFF1D1D1F),
                               ),
                             ),
                             TextButton(
@@ -564,6 +746,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyNewsState() {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.article_outlined, color: Colors.grey, size: 40),
+            SizedBox(height: 12),
+            Text(
+              'Belum ada berita',
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+          ],
         ),
       ),
     );
@@ -657,11 +862,15 @@ class _QuickMenuItem extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final Color color;
+  final Gradient gradient;
 
   const _QuickMenuItem({
     required this.icon,
     required this.label,
     required this.onTap,
+    required this.color,
+    required this.gradient,
   });
 
   @override
@@ -705,46 +914,45 @@ class _QuickMenuItemState extends State<_QuickMenuItem>
             scale: _scaleAnimation.value,
             child: Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.white, const Color(0xFFF0F4FF)],
-                ),
-                borderRadius: BorderRadius.circular(20), // Rounded lebih besar
+                gradient: widget.gradient,
+                borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+                    color: widget.color.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 8,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      widget.icon,
-                      color: const Color(0xFF007AFF),
-                      size: 24, // ⬅️ KECILKAN
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.95),
+                      shape: BoxShape.circle,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
+                    child: Icon(widget.icon, color: widget.color, size: 18),
+                  ),
+                  const SizedBox(height: 6),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Text(
                       widget.label,
                       textAlign: TextAlign.center,
-                      maxLines: 1, // ⬅️ PENTING
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 12, // ⬅️ KECILKAN
-                        color: Color(0xFF007AFF),
+                        fontSize: 11,
+                        color: Colors.white,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           );
@@ -863,7 +1071,6 @@ class _InfographicHomeCard extends StatelessWidget {
     );
   }
 }
-
 
 class _FeedbackSheet extends StatefulWidget {
   const _FeedbackSheet();
@@ -990,14 +1197,16 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
                             return Column(
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: List.generate(3, (index) {
                                     return _buildRatingItem(index);
                                   }),
                                 ),
                                 const SizedBox(height: 12),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: List.generate(2, (index) {
                                     return _buildRatingItem(index + 3);
                                   }),
@@ -1042,13 +1251,15 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
                           child: DropdownButton2<String>(
                             value: _job,
                             items: _jobs
-                                .map((e) => DropdownMenuItem(
-                                      value: e,
-                                      child: Text(
-                                        e,
-                                        style: const TextStyle(fontSize: 15),
-                                      ),
-                                    ))
+                                .map(
+                                  (e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Text(
+                                      e,
+                                      style: const TextStyle(fontSize: 15),
+                                    ),
+                                  ),
+                                )
                                 .toList(),
                             onChanged: (v) => setState(() => _job = v),
                             buttonStyleData: const ButtonStyleData(
@@ -1100,8 +1311,12 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
                             label: Text(
                               tag,
                               style: TextStyle(
-                                color: selected ? const Color(0xFF007AFF) : const Color(0xFF1D1D1F),
-                                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                                color: selected
+                                    ? const Color(0xFF007AFF)
+                                    : const Color(0xFF1D1D1F),
+                                fontWeight: selected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
                               ),
                             ),
                             selected: selected,
@@ -1111,7 +1326,9 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
                               });
                             },
                             backgroundColor: Colors.white,
-                            selectedColor: const Color(0xFF007AFF).withOpacity(0.1),
+                            selectedColor: const Color(
+                              0xFF007AFF,
+                            ).withOpacity(0.1),
                             checkmarkColor: const Color(0xFF007AFF),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -1187,18 +1404,28 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
 
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        backgroundColor: const Color(0xFF34C759),
+                                        backgroundColor: const Color(
+                                          0xFF34C759,
+                                        ),
                                         behavior: SnackBarBehavior.floating,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         content: const Row(
                                           children: [
-                                            Icon(Icons.check_circle, color: Colors.white, size: 20),
+                                            Icon(
+                                              Icons.check_circle,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ),
                                             SizedBox(width: 8),
                                             Text(
                                               'Terima kasih atas feedback Anda',
-                                              style: TextStyle(color: Colors.white),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -1207,18 +1434,28 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
                                   } catch (e) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        backgroundColor: const Color(0xFFFF3B30),
+                                        backgroundColor: const Color(
+                                          0xFFFF3B30,
+                                        ),
                                         behavior: SnackBarBehavior.floating,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         content: const Row(
                                           children: [
-                                            Icon(Icons.error_outline, color: Colors.white, size: 20),
+                                            Icon(
+                                              Icons.error_outline,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ),
                                             SizedBox(width: 8),
                                             Text(
                                               'Gagal mengirim feedback',
-                                              style: TextStyle(color: Colors.white),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -1250,11 +1487,11 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
     final emojis = ['😞', '😐', '🙂', '😄', '😍'];
     final labels = ['Buruk', 'Cukup', 'Baik', 'Sangat Baik', 'Luar Biasa'];
     final isSelected = _rating == index + 1;
-    
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth < 350 ? 72.0 : 64.0;
-        
+
         return GestureDetector(
           onTap: () => setState(() => _rating = index + 1),
           child: Container(
@@ -1274,10 +1511,7 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
             child: Column(
               children: [
                 const SizedBox(height: 12),
-                Text(
-                  emojis[index],
-                  style: const TextStyle(fontSize: 32),
-                ),
+                Text(emojis[index], style: const TextStyle(fontSize: 32)),
                 const SizedBox(height: 8),
                 Text(
                   labels[index],
@@ -1289,8 +1523,9 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
                     color: isSelected
                         ? const Color(0xFF007AFF)
                         : const Color(0xFF6E6E73),
-                    fontWeight:
-                        isSelected ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
                   ),
                 ),
                 const SizedBox(height: 12),

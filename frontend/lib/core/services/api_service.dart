@@ -65,6 +65,7 @@ class ApiService {
     int? category,
     String? query,
     String? filter,
+    int? year
   }) async {
     try {
       final response = await _dio.get('/publication');
@@ -76,6 +77,7 @@ class ApiService {
       if (query != null && query.isNotEmpty) 'q': query,
       if (sort != null) 'sort': sort,
       if (filter != null) 'filter': filter,
+      if (year != null) 'year' : year,
     };
 
     final response = await _dio.get(

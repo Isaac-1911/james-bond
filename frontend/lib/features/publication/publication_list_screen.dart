@@ -16,6 +16,7 @@ class PublicationListScreen extends StatefulWidget {
 }
 
 class _PublicationListScreenState extends State<PublicationListScreen> {
+  int? _selectedYear;
   int _segmentIndex = 0;
   final ApiService _apiService = ApiService();
   final ScrollController _scrollController = ScrollController();
@@ -31,7 +32,6 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
   final int _limit = 12;
   String _query = '';
   String? _sort;
-  String? _filter;
 
   @override
   void initState() {
@@ -106,6 +106,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
         query: _query.isEmpty ? null : _query,
         sort: _segmentIndex == 1 ? 'popular' : null,
         category: null,
+        year: _selectedYear,
       );
 
       final List<Publication> newItems = result['items'];
@@ -322,7 +323,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
             height: 48,
             child: ElevatedButton(
               onPressed: () {
-                // TODO: Implement filter modal
+                _openFilterSheet();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -349,6 +350,553 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
         ],
       ),
     );
+  }
+
+  void _openFilterSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle drag indicator
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Filter Pencarian',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF1D1D1F),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.close_rounded,
+                                color: Color(0xFF6E6E73),
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        'Saring hasil berdasarkan kriteria tertentu',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Filter Item: Tahun Rilis
+                      GestureDetector(
+                        onTap: _openYearPicker,
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.grey.shade300,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                    0xFF007AFF,
+                                  ).withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.calendar_month_rounded,
+                                  color: Color(0xFF007AFF),
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Tahun Rilis',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF1D1D1F),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _selectedYear?.toString() ??
+                                          'Semua Tahun',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: _selectedYear != null
+                                            ? const Color(0xFF007AFF)
+                                            : Colors.grey.shade600,
+                                        fontWeight: _selectedYear != null
+                                            ? FontWeight.w600
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                color: Colors.grey.shade400,
+                                size: 24,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // Action Buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: 52,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _resetFilter();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: const Color(0xFF007AFF),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                    side: const BorderSide(
+                                      color: Color(0xFF007AFF),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Reset',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(width: 12),
+
+                          Expanded(
+                            child: SizedBox(
+                              height: 52,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _applyFilter();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF007AFF),
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Terapkan',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _resetFilter() {
+    setState(() {
+      _selectedYear = null;
+      _page = 1;
+      _hasMore = true;
+      _publications.clear();
+    });
+
+    _fetchPublications();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: const Color(0xFF34C759),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        content: const Row(
+          children: [
+            Icon(Icons.restart_alt_rounded, color: Colors.white, size: 20),
+            SizedBox(width: 8),
+            Text(
+              'Filter berhasil direset',
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openYearPicker() {
+    final currentYear = DateTime.now().year;
+    final years = List.generate(
+      20,
+      (i) => currentYear - i,
+    ); // 20 tahun ke belakang
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Drag handle
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Pilih Tahun',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1D1D1F),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.close_rounded,
+                            color: Color(0xFF6E6E73),
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                Text(
+                  'Pilih tahun rilis publikasi',
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                ),
+
+                const SizedBox(height: 16),
+
+                // "Semua Tahun" option
+                GestureDetector(
+                  onTap: () {
+                    setState(() => _selectedYear = null);
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: _selectedYear == null
+                          ? const Color(0xFF007AFF).withOpacity(0.1)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: _selectedYear == null
+                            ? const Color(0xFF007AFF)
+                            : Colors.grey.shade300,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: _selectedYear == null
+                                  ? const Color(0xFF007AFF)
+                                  : Colors.grey.shade400,
+                              width: 2,
+                            ),
+                          ),
+                          child: _selectedYear == null
+                              ? Center(
+                                  child: Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFF007AFF),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'Semua Tahun',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF1D1D1F),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Year list with divider
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  child: const Divider(color: Color(0xFFE5E5EA), thickness: 1),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Years list
+                Container(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.4,
+                  ),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: years.length,
+                    separatorBuilder: (context, index) => const Divider(
+                      height: 1,
+                      color: Color(0xFFF2F2F7),
+                      indent: 20,
+                      endIndent: 20,
+                    ),
+                    itemBuilder: (context, index) {
+                      final year = years[index];
+                      final isSelected = _selectedYear == year;
+
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          setState(() => _selectedYear = year);
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          color: isSelected
+                              ? const Color(0xFF007AFF).withOpacity(0.05)
+                              : Colors.transparent,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? const Color(0xFF007AFF)
+                                        : Colors.grey.shade400,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: isSelected
+                                    ? Center(
+                                        child: Container(
+                                          width: 12,
+                                          height: 12,
+                                          decoration: const BoxDecoration(
+                                            color: Color(0xFF007AFF),
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                year.toString(),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.w500,
+                                  color: isSelected
+                                      ? const Color(0xFF007AFF)
+                                      : const Color(0xFF1D1D1F),
+                                ),
+                              ),
+                              const Spacer(),
+                              if (isSelected)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFF007AFF,
+                                    ).withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    'Terpilih',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: const Color(0xFF007AFF),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Close button
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade100,
+                        foregroundColor: const Color(0xFF6E6E73),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: const Text(
+                        'Tutup',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _applyFilter() {
+    _page = 1;
+    _hasMore = true;
+    _publications.clear();
+    _fetchPublications();
   }
 
   Widget _buildSegment() {
