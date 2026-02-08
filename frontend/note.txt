@@ -48,7 +48,7 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 40,
                 spreadRadius: 0,
               ),

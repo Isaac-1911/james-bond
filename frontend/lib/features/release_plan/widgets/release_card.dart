@@ -18,7 +18,7 @@ class ReleaseCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -126,14 +126,10 @@ class ReleaseCard extends StatelessWidget {
           ),
         );
       } else if (item.type == 'brs') {
-        final news = await ApiService().getNewsById(
-          item.targetId!,
-        );
+        final news = await ApiService().getNewsById(item.targetId!);
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => NewsDetailScreen(news: news),
-          ),
+          MaterialPageRoute(builder: (_) => NewsDetailScreen(news: news)),
         );
       }
     } catch (e) {

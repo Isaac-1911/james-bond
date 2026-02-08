@@ -203,10 +203,7 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
                 const SizedBox(width: 8),
                 Text(
                   'Dirilis ${widget.activityNews.releaseDate!}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
                 ),
               ],
             ),
@@ -301,7 +298,7 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, -8),
             ),
@@ -392,9 +389,7 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
         SnackBar(
           backgroundColor: const Color(0xFF34C759),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           content: const Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white, size: 20),
@@ -414,9 +409,7 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
         SnackBar(
           backgroundColor: const Color(0xFFFF3B30),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           content: const Row(
             children: [
               Icon(Icons.error_outline, color: Colors.white, size: 20),
@@ -446,12 +439,13 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
     });
 
     try {
-      final text = widget.activityNews.releaseDate != null &&
+      final text =
+          widget.activityNews.releaseDate != null &&
               widget.activityNews.releaseDate!.isNotEmpty
           ? '${widget.activityNews.title}\n\nDirilis: ${widget.activityNews.releaseDate}'
           : widget.activityNews.title;
 
-      await Share.share(text);
+      await SharePlus.instance.share(ShareParams(text: text));
     } finally {
       if (mounted) {
         setState(() {

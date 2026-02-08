@@ -77,8 +77,9 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                       enlargeFactor: 0.2,
                       autoPlay: widget.images.length > 1,
                       autoPlayInterval: const Duration(seconds: 4),
-                      autoPlayAnimationDuration:
-                          const Duration(milliseconds: 800),
+                      autoPlayAnimationDuration: const Duration(
+                        milliseconds: 800,
+                      ),
                       autoPlayCurve: Curves.fastOutSlowIn,
                       enableInfiniteScroll: false,
                       onPageChanged: (index, reason) {
@@ -102,7 +103,7 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -142,8 +143,9 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                             boxShadow: _currentPage == index
                                 ? [
                                     BoxShadow(
-                                      color: const Color(0xFF007AFF)
-                                          .withOpacity(0.3),
+                                      color: const Color(
+                                        0xFF007AFF,
+                                      ).withOpacity(0.3),
                                       blurRadius: 8,
                                       offset: const Offset(0, 2),
                                     ),
@@ -153,8 +155,7 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                         ),
                       ),
                     ),
-                  if (widget.images.length == 1)
-                    const SizedBox(width: 8),
+                  if (widget.images.length == 1) const SizedBox(width: 8),
                   if (widget.images.length > 1)
                     Row(
                       children: [
@@ -178,8 +179,9 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                               boxShadow: _currentPage > 0
                                   ? [
                                       BoxShadow(
-                                        color: const Color(0xFF007AFF)
-                                            .withOpacity(0.3),
+                                        color: const Color(
+                                          0xFF007AFF,
+                                        ).withOpacity(0.3),
                                         blurRadius: 8,
                                         offset: const Offset(0, 4),
                                       ),
@@ -216,8 +218,9 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                               boxShadow: _currentPage < widget.images.length - 1
                                   ? [
                                       BoxShadow(
-                                        color: const Color(0xFF007AFF)
-                                            .withOpacity(0.3),
+                                        color: const Color(
+                                          0xFF007AFF,
+                                        ).withOpacity(0.3),
                                         blurRadius: 8,
                                         offset: const Offset(0, 4),
                                       ),
@@ -256,10 +259,7 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                   ),
                   child: const Text(
                     'Mengerti',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                 ),
               ),

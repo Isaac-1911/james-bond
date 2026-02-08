@@ -16,10 +16,6 @@ class _StatisticTestScreenState extends State<StatisticTestScreen> {
     try {
       final api = ApiService();
       final res = await api.getStatistic();
-      final data = await api.getStatistic();
-
-      print(data.length);
-
       setState(() {
         statistic = res;
         status = 'Data Loaded!';

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:frontend/models/publication.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:ionicons/ionicons.dart';
 import '../notification/notification_screen.dart';
 import '../../core/services/api_service.dart';
 import '../../core/config/api_config.dart';
@@ -491,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   //       ), // Rounded lebih besar
                   //       boxShadow: [
                   //         BoxShadow(
-                  //           color: Colors.black.withOpacity(0.1),
+                  //           color: Colors.black.withValues(alpha: 0.1),
                   //           blurRadius: 10,
                   //           offset: const Offset(0, 4),
                   //         ),
@@ -1121,7 +1120,7 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 40,
                 spreadRadius: 0,
               ),

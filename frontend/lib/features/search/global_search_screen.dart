@@ -569,8 +569,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         return const Color(0xFFFF9500);
       case SearchItemType.infographic:
         return const Color(0xFFAF52DE);
-      default:
-        return const Color(0xFF007AFF);
+
     }
   }
 
@@ -584,8 +583,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         return Icons.table_chart_rounded;
       case SearchItemType.infographic:
         return Icons.image_rounded;
-      default:
-        return Icons.search_rounded;
+
     }
   }
 

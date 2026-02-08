@@ -120,82 +120,82 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
   }
 
   Widget _buildCover() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Container(
-      height: 320, // Tinggi lebih untuk efek hero
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: _coverUrl != null
-            ? CachedNetworkImage(
-                imageUrl: _coverUrl!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-                placeholder: (context, url) => Container(
-                  color: Colors.grey.shade200,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        height: 320, // Tinggi lebih untuk efek hero
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: _coverUrl != null
+              ? CachedNetworkImage(
+                  imageUrl: _coverUrl!,
+                  fit: BoxFit.cover,
                   width: double.infinity,
                   height: double.infinity,
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Color(0xFF007AFF),
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey.shade200,
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Color(0xFF007AFF),
+                      ),
                     ),
                   ),
-                ),
-                errorWidget: (context, url, error) => Container(
+                  errorWidget: (context, url, error) => Container(
+                    color: const Color(0xFF007AFF).withOpacity(0.1),
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.picture_as_pdf_rounded,
+                            color: Color(0xFF007AFF),
+                            size: 60,
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'Cover Tidak Tersedia',
+                            style: TextStyle(
+                              color: Color(0xFF007AFF),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              : Container(
                   color: const Color(0xFF007AFF).withOpacity(0.1),
                   width: double.infinity,
                   height: double.infinity,
                   child: const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.picture_as_pdf_rounded,
-                          color: Color(0xFF007AFF),
-                          size: 60,
-                        ),
-                        SizedBox(height: 12),
-                        Text(
-                          'Cover Tidak Tersedia',
-                          style: TextStyle(
-                            color: Color(0xFF007AFF),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                    child: Icon(
+                      Icons.picture_as_pdf_rounded,
+                      color: Color(0xFF007AFF),
+                      size: 60,
                     ),
                   ),
                 ),
-              )
-            : Container(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
-                width: double.infinity,
-                height: double.infinity,
-                child: const Center(
-                  child: Icon(
-                    Icons.picture_as_pdf_rounded,
-                    color: Color(0xFF007AFF),
-                    size: 60,
-                  ),
-                ),
-              ),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildHeader() {
     return Padding(
@@ -398,7 +398,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, -8),
             ),
@@ -506,7 +506,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
           ? '${widget.publication.title}\n\nDirilis: ${widget.publication.releaseDate}'
           : widget.publication.title;
 
-      await Share.share(text);
+      await SharePlus.instance.share(ShareParams(text: text));
     } finally {
       if (mounted) {
         setState(() {

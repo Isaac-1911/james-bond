@@ -44,16 +44,12 @@ class StatisticApiService {
   }
 
   static Future<List<StatisticTable>> getAllTables() async {
-    print('>>> getAllTables CALLED');
-    print('>>> BASE URL = ${_dio.options.baseUrl}');
+
 
     final res = await _dio.get('/statistic/tables');
 
-    print('>>> STATUS = ${res.statusCode}');
-    print('>>> RES DATA = ${res.data}');
 
     final List data = res.data['data'];
-    print('>>> DATA LENGTH = ${data.length}');
 
     return data.map((e) => StatisticTable.fromJson(e)).toList();
   }

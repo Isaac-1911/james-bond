@@ -3,7 +3,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/features/navigation/main_navigation.dart';
 
 import 'core/config/api_config.dart';
-import 'core/services/api_service.dart';
 
 
 Future<void> main() async {
@@ -20,7 +19,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final api = ApiService();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

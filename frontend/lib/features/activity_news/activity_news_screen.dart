@@ -592,6 +592,8 @@ class _ActivityNewsCardState extends State<ActivityNewsCard> {
         [XFile(file.path)],
         text: widget.activityNews.title,
       );
+
+      
     } catch (_) {
       if (!mounted) return;
 
