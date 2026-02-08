@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/core/services/api_service.dart';
 
 class StatisticTestScreen extends StatefulWidget {
+  const StatisticTestScreen({super.key});
+
   @override
   State<StatisticTestScreen> createState() => _StatisticTestScreenState();
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../core/services/api_service.dart';
-import 'package:frontend/features/infographic/infographic_test_screen.dart';
 
 class InfographicTestScreen extends StatefulWidget {
+  const InfographicTestScreen({super.key});
+
   @override
   State<InfographicTestScreen> createState() => _InfographicTestScreenState();
 }

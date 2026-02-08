@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReleasePlan extends Model
 {
+    protected $primaryKey = 'id';
+    protected $table = 'release_plans';
+
     protected $fillable = [
         'title',
         'type',

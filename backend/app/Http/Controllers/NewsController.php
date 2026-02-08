@@ -31,7 +31,7 @@ class NewsController extends Controller
             'title' => 'required|string',
             'release_date' => 'required|date',
             'summary' => 'nullable|string',
-            'image' => 'required|image|max:12000'
+            'image' => 'required|image|max:20000'
         ]);
 
         // simpan PATH saja

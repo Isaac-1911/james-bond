@@ -1,6 +1,6 @@
-import 'dart:ui';
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:frontend/models/category.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../models/publication.dart';
 import '../../core/config/api_config.dart';
 import '../publication/widgets/publication_card.dart';
@@ -17,32 +17,31 @@ class PublicationListScreen extends StatefulWidget {
 
 class _PublicationListScreenState extends State<PublicationListScreen> {
   int _segmentIndex = 0;
-
   final ApiService _apiService = ApiService();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+  final ValueNotifier<bool> _isSearching = ValueNotifier<bool>(false);
+  Timer? _debounceTimer;
 
-  List<Publication> _publications = [];
+  final List<Publication> _publications = [];
   bool _isLoading = false;
   bool _hasMore = true;
-
   int _page = 1;
-  final int _limit = 10;
+  final int _limit = 12;
   String _query = '';
   String? _sort;
-  int? _category;
-  int? _utamaCategoryId;
+  String? _filter;
 
   @override
   void initState() {
     super.initState();
     _fetchPublications();
-    _loadCategories();
-    debugPrint('🔥 PublicationListScreen initState CALLED');
+    _searchController.addListener(_onSearchChanged);
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
-              _scrollController.position.maxScrollExtent - 200 &&
+              _scrollController.position.maxScrollExtent - 300 &&
           !_isLoading &&
           _hasMore) {
         _fetchPublications();
@@ -52,32 +51,50 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _scrollController.dispose();
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _searchFocusNode.dispose();
+    _isSearching.dispose();
     super.dispose();
   }
 
-  Future<void> _loadCategories() async {
-    try {
-      final categories = await _apiService.getCategories();
-
-      final utama = categories.firstWhere(
-        (c) => c.name?.toLowerCase() == 'utama',
-        orElse: () => Category(id: -1, name: ''),
-      );
-
-      if (utama.id != -1) {
-        _utamaCategoryId = utama.id;
-      }
-    } catch (_) {
-      // fail silently
+  void _onSearchChanged() {
+    if (_debounceTimer?.isActive ?? false) {
+      _debounceTimer?.cancel();
     }
+
+    final query = _searchController.text.trim();
+    if (query.isEmpty) {
+      _query = '';
+      _isSearching.value = false;
+      _resetAndFetch();
+      return;
+    }
+
+    _isSearching.value = true;
+    _debounceTimer = Timer(const Duration(milliseconds: 600), () {
+      _query = query;
+      _resetAndFetch();
+      _isSearching.value = false;
+    });
+  }
+
+  void _resetAndFetch() {
+    if (!mounted) return;
+
+    setState(() {
+      _page = 1;
+      _hasMore = true;
+      _publications.clear();
+    });
+
+    _fetchPublications();
   }
 
   Future<void> _fetchPublications() async {
-    if (_isLoading || !_hasMore) {
-      return;
-    }
+    if (_isLoading || !_hasMore) return;
 
     try {
       if (!mounted) return;
@@ -87,9 +104,10 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
         page: _page,
         limit: _limit,
         query: _query.isEmpty ? null : _query,
-        sort: _sort,
-        category: _category,
+        sort: _segmentIndex == 1 ? 'popular' : null,
+        category: null,
       );
+
       final List<Publication> newItems = result['items'];
       final int currentPage = result['currentPage'];
       final int lastPage = result['lastPage'];
@@ -102,10 +120,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
         _hasMore = currentPage < lastPage;
         _isLoading = false;
       });
-    } catch (e, stackTrace) {
-      debugPrint('❌ FETCH ERROR: $e');
-      debugPrint('$stackTrace');
-
+    } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -113,226 +128,101 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
   }
 
   void _onSearchSubmit(String value) {
+    _searchFocusNode.unfocus();
     _query = value.trim();
-    _page = 1;
-    _hasMore = true;
-    _publications.clear();
-    _fetchPublications();
+    _resetAndFetch();
   }
 
   void _clearSearch() {
     _searchController.clear();
     _query = '';
-    _page = 1;
-    _hasMore = true;
-    _publications.clear();
-    _fetchPublications();
+    _resetAndFetch();
+    _searchFocusNode.unfocus();
+  }
+
+  void _onSegmentChanged(int index) {
+    if (_segmentIndex == index) return;
+
+    setState(() {
+      _segmentIndex = index;
+      _sort = index == 1 ? 'popular' : null;
+    });
+
+    _resetAndFetch();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Background gradien futuristik (dari putih ke abu-abu halus)
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFF2F2F7), Color(0xFFE5E5EA)],
-          ),
-        ),
+      backgroundColor: const Color(0xFFF2F2F7),
+      body: SafeArea(
         child: Column(
           children: [
-            // ===== APPBAR DENGAN EFEK BLUR DAN GRADIEN (FUTURISTIK) =====
-            ClipRRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Efek blur glassmorphism
-                child: AppBar(
-                  automaticallyImplyLeading: false,
-                  title: const Text(
-                    'Publikasi',
-                    style: TextStyle(
-                      fontSize: 18, // Sedikit lebih besar untuk kesan modern
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF007AFF),
-                    ),
-                  ),
-                  backgroundColor: Colors.white.withOpacity(0.8), // Transparan untuk blur
-                  elevation: 0,
-                  flexibleSpace: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.white, Color(0xFFE0E0E0)], // Gradien halus
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-              child: Column(
-                children: [
-                  // Row(
-                  //   children: const [
-                  //     Icon(Icons.place, size: 20, color: Colors.grey), // Ikon sedikit lebih besar
-                  //     SizedBox(width: 8),
-                  //     Text(
-                  //       'BPS Kabupaten Bondowoso',
-                  //       style: TextStyle(color: Colors.grey, fontSize: 14),
-                  //     ),
-                  //   ],
-                  // ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4), // Shadow futuristik
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            controller: _searchController,
-                            textInputAction: TextInputAction.search,
-                            onSubmitted: _onSearchSubmit,
-                            decoration: InputDecoration(
-                              hintText: 'Cari Publikasi di sini',
-                              prefixIcon: const Icon(Icons.search, color: Color(0xFF007AFF)),
-                              suffixIcon: _searchController.text.isNotEmpty
-                                  ? IconButton(
-                                      icon: const Icon(Icons.close, color: Colors.grey),
-                                      onPressed: _clearSearch,
-                                    )
-                                  : null,
-                              filled: true,
-                              fillColor: Colors.white,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(24), // Lebih rounded untuk futuristik
-                                borderSide: BorderSide.none,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF007AFF), Color(0xFF0056CC)], // Gradien biru futuristik
-                          ),
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF007AFF).withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.tune, color: Colors.white),
-                          label: const Text('Filter', style: TextStyle(color: Colors.white)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent, // Transparan untuk gradien
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _buildSegment(),
-            ),
-
+            _buildAppBar(),
+            const SizedBox(height: 16),
+            _buildSearchSection(),
             const SizedBox(height: 20),
+            _buildSegment(),
+            const SizedBox(height: 20),
+            Expanded(child: _buildContent()),
+          ],
+        ),
+      ),
+    );
+  }
 
-            Expanded(
-              child: Builder(
-                builder: (context) {
-                  if (_isLoading && _publications.isEmpty) {
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: 6,
-                      itemBuilder: (_, __) => const PublicationCardShimmer(),
-                    );
-                  }
-
-                  if (_publications.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'Publikasi tidak ditemukan',
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
-                      ),
-                    );
-                  }
-
-                  return ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: _publications.length + (_hasMore ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index == _publications.length) {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          child: Center(
-                            child: SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF007AFF)),
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-
-                      final publication = _publications[index];
-
-                      return AnimatedOpacity(
-                        opacity: 1.0, // Fade-in sederhana; bisa diperbaiki dengan AnimationController
-                        duration: const Duration(milliseconds: 500),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => PublicationDetailScreen(
-                                  publication: publication,
-                                ),
-                              ),
-                            );
-                          },
-                          child: PublicationCard(
-                            title: publication.title,
-                            date: publication.releaseDate ?? '',
-                            coverUrl: publication.coverUrl != null
-                                ? '${ApiConfig.storageUrl}/${publication.coverUrl}'
-                                : null,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
+  Widget _buildAppBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // GestureDetector(
+            //   onTap: () => Navigator.pop(context),
+            //   child: Container(
+            //     width: 44,
+            //     height: 44,
+            //     decoration: BoxDecoration(
+            //       color: Colors.grey.shade100,
+            //       shape: BoxShape.circle,
+            //     ),
+            //     child: const Icon(
+            //       Icons.arrow_back_rounded,
+            //       color: Color(0xFF007AFF),
+            //       size: 22,
+            //     ),
+            //   ),
+            // ),
+            const Text(
+              'Publikasi',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1D1D1F),
+              ),
+            ),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0xFF007AFF).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.book_rounded,
+                color: Color(0xFF007AFF),
+                size: 22,
               ),
             ),
           ],
@@ -341,115 +231,377 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
     );
   }
 
-  Alignment _segmentAlignment() {
-    if (_segmentIndex == 0) return Alignment.centerLeft;
-    if (_segmentIndex == 1) return Alignment.center;
-    return Alignment.centerRight;
-  }
-
-  double _segmentWidth() {
-    return MediaQuery.of(context).size.width / 3;
-  }
-
-  Widget _buildSegment() {
-    return Container(
-      height: 48, 
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE5E5EA),
-        borderRadius: BorderRadius.circular(24), 
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Stack(
+  Widget _buildSearchSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
         children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final segmentWidth = constraints.maxWidth / 3;
-
-              return AnimatedAlign(
-                duration: const Duration(milliseconds: 300), // Lebih smooth
-                curve: Curves.easeInOut,
-                alignment: _segmentAlignment(),
-                child: Container(
-                  width: segmentWidth,
-                  height: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF007AFF), Color(0xFF0056CC)], // Gradien pada indicator
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF007AFF).withOpacity(0.3),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: TextField(
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              textInputAction: TextInputAction.search,
+              onSubmitted: _onSearchSubmit,
+              decoration: InputDecoration(
+                hintText: 'Cari publikasi...',
+                hintStyle: const TextStyle(color: Color(0xFF8E8E93)),
+                prefixIcon: Container(
+                  margin: const EdgeInsets.only(left: 16, right: 12),
+                  child: const Icon(
+                    Icons.search_rounded,
+                    color: Color(0xFF007AFF),
+                    size: 22,
                   ),
                 ),
-              );
-            },
+                suffixIcon: ValueListenableBuilder<bool>(
+                  valueListenable: _isSearching,
+                  builder: (context, isSearching, child) {
+                    if (isSearching) {
+                      return Container(
+                        margin: const EdgeInsets.only(right: 16),
+                        width: 20,
+                        height: 20,
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Color(0xFF007AFF),
+                        ),
+                      );
+                    }
+                    return _searchController.text.isNotEmpty
+                        ? GestureDetector(
+                            onTap: _clearSearch,
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 12),
+                              child: Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade300,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close_rounded,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
+                          )
+                        : const SizedBox.shrink();
+                  },
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF007AFF),
+                    width: 2,
+                  ),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 18),
+              ),
+            ),
           ),
-          Row(
-            children: [
-              _segmentItem('Semua', 0),
-              _segmentItem('Populer', 1),
-              _segmentItem('Utama', 2),
-            ],
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 48,
+            child: ElevatedButton(
+              onPressed: () {
+                // TODO: Implement filter modal
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF007AFF),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: const BorderSide(color: Color(0xFF007AFF), width: 1.5),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.tune_rounded, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    'Filter & Urutkan',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _segmentItem(String label, int index) {
-    final bool isActive = _segmentIndex == index;
-    final bool isDisabled = label == 'Utama' && _utamaCategoryId == null;
+  Widget _buildSegment() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Stack(
+          children: [
+            AnimatedAlign(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              alignment: _segmentIndex == 0
+                  ? Alignment.centerLeft
+                  : Alignment.centerRight,
+              child: Container(
+                width: MediaQuery.of(context).size.width / 2 - 24,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF007AFF),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF007AFF).withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Row(
+              children: [
+                _buildSegmentItem('Semua', 0),
+                _buildSegmentItem('Populer', 1),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSegmentItem(String label, int index) {
+    final isActive = _segmentIndex == index;
 
     return Expanded(
       child: GestureDetector(
-        onTap: isDisabled
-            ? null
-            : () {
-                setState(() {
-                  _segmentIndex = index;
-                  _page = 1;
-                  _hasMore = true;
-                  _publications.clear();
-
-                  if (index == 0) {
-                    _sort = null;
-                    _category = null;
-                  } else if (index == 1) {
-                    _sort = 'popular';
-                    _category = null;
-                  } else if (index == 2) {
-                    _sort = null;
-                    _category = _utamaCategoryId;
-                  }
-                });
-                _fetchPublications();
-              },
-        child: Opacity(
-          opacity: isDisabled ? 0.4 : 1,
+        onTap: () => _onSegmentChanged(index),
+        child: Container(
+          height: double.infinity,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
           child: Center(
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 15, 
+                fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: isActive ? Colors.white : Colors.black54,
+                color: isActive ? Colors.white : const Color(0xFF6E6E73),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildContent() {
+    if (_isLoading && _publications.isEmpty) {
+      return _buildLoadingShimmer();
+    }
+
+    if (_publications.isEmpty && !_isLoading) {
+      return _buildEmptyState();
+    }
+
+    return _buildPublicationsList();
+  }
+
+  Widget _buildLoadingShimmer() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: ListView.separated(
+        itemCount: 6,
+        separatorBuilder: (context, index) => const SizedBox(height: 16),
+        itemBuilder: (context, index) => const PublicationCardShimmer(),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: const Color(0xFF007AFF).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.book_rounded,
+              color: Color(0xFF007AFF),
+              size: 36,
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Publikasi tidak ditemukan',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1D1D1F),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _query.isEmpty
+                ? 'Tidak ada publikasi tersedia'
+                : 'Tidak ada publikasi dengan kata kunci "$_query"',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          ),
+          if (_query.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            SizedBox(
+              width: 160,
+              height: 44,
+              child: ElevatedButton(
+                onPressed: _clearSearch,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF007AFF),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Hapus Pencarian',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPublicationsList() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF007AFF).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.info_outline_rounded,
+                  color: Color(0xFF007AFF),
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '${_publications.length} publikasi ditemukan${_query.isNotEmpty ? ' untuk "$_query"' : ''}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF007AFF),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: ListView.separated(
+              controller: _scrollController,
+              itemCount: _publications.length + (_hasMore ? 1 : 0),
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                if (index == _publications.length) {
+                  return _buildLoadMoreIndicator();
+                }
+
+                final publication = _publications[index];
+                return _buildPublicationItem(publication, index);
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoadMoreIndicator() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Center(
+        child: _hasMore
+            ? const CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Color(0xFF007AFF),
+              )
+            : Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'Semua publikasi telah ditampilkan',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildPublicationItem(Publication publication, int index) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PublicationDetailScreen(publication: publication),
+          ),
+        );
+      },
+      child: PublicationCard(
+        title: publication.title,
+        date: publication.releaseDate ?? '',
+        coverUrl: publication.coverUrl != null
+            ? '${ApiConfig.storageUrl}/${publication.coverUrl}'
+            : null,
+      ).animate().fadeIn(duration: 300.ms, delay: (index * 60).ms),
     );
   }
 }

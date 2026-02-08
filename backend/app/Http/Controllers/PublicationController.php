@@ -18,16 +18,16 @@ class PublicationController extends Controller
 
         $query = Publication::query();
 
-        // FILTER UTAMA
-        if ($request->has('category')) {
-            $query->where('publication_category', $request->category);
+        if ($request->get('filter') === 'featured') {
+            $query->where('is_featured', 1);
         }
 
-        // FILTER POPULER
         if ($request->get('sort') === 'popular') {
-            $query->orderBy('download_count', 'desc');
+            $query->where('download_count', '>', 10)
+                ->orderByDesc('download_count');
         } else {
-            $query->orderBy('release_date', 'desc');
+            // default sorting
+            $query->orderByDesc('release_date');
         }
 
 

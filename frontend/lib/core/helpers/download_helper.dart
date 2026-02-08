@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import '../config/api_config.dart';
@@ -57,13 +56,45 @@ class DownloadHelper {
 
       // ================== SUCCESS ==================
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('PDF tersimpan di: ${downloadDir.path}')),
+        SnackBar(
+          backgroundColor: const Color(0xFF34C759),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Text(
+                'PDF berhasil disimpan',
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
       );
     } catch (e) {
       debugPrint('DOWNLOAD ERROR: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Gagal download PDF')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: const Color(0xFFFF3B30),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          content: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Text(
+                'Gagal mengunduh PDF',
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      );
     }
   }
 

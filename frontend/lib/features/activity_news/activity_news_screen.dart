@@ -1,38 +1,25 @@
-import 'package:flutter/material.dart';
-import '../../core/services/api_service.dart';
-import '../../core/config/api_config.dart';
-import '../../models/infographic.dart';
-import 'package:share_plus/share_plus.dart';
-import '../../core/helpers/download_helper.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+import 'activity_news_detail_screen.dart';
+import '../../core/services/api_service.dart';
+import '../../models/activity_news.dart';
+import '../../core/helpers/download_helper.dart';
 
-
-class InfographicScreen extends StatefulWidget {
-  const InfographicScreen({super.key});
+class ActivityNewsScreen extends StatefulWidget {
+  const ActivityNewsScreen({super.key});
 
   @override
-  State<InfographicScreen> createState() => _InfographicScreenState();
+  State<ActivityNewsScreen> createState() => _ActivityNewsScreenState();
 }
 
-class _InfographicScreenState extends State<InfographicScreen> {
-  late final Future<List<Infographic>> _infographicsFuture;
-  final ValueNotifier<List<Infographic>> _infographics = 
-      ValueNotifier<List<Infographic>>([]);
+class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
+  late final Future<List<ActivityNews>> _activityNewsFuture;
 
   @override
   void initState() {
     super.initState();
-    _infographicsFuture = ApiService().getInfographic();
-    _infographicsFuture.then((infographics) {
-      _infographics.value = infographics;
-    });
-  }
-
-  @override
-  void dispose() {
-    _infographics.dispose();
-    super.dispose();
+    _activityNewsFuture = ApiService().getActivityNews();
   }
 
   @override
@@ -87,7 +74,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
             //   ),
             // ),
             const Text(
-              'Infografis',
+              'Berita Kegiatan',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -102,7 +89,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.image_rounded,
+                Icons.newspaper_rounded,
                 color: Color(0xFF007AFF),
                 size: 22,
               ),
@@ -114,8 +101,8 @@ class _InfographicScreenState extends State<InfographicScreen> {
   }
 
   Widget _buildContent() {
-    return FutureBuilder<List<Infographic>>(
-      future: _infographicsFuture,
+    return FutureBuilder<List<ActivityNews>>(
+      future: _activityNewsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _buildLoadingState();
@@ -131,7 +118,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
           return _buildEmptyState();
         }
 
-        return _buildInfographicsList();
+        return _buildActivityNewsList(data);
       },
     );
   }
@@ -147,7 +134,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            'Memuat infografis...',
+            'Memuat berita kegiatan...',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade600,
@@ -178,7 +165,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Gagal memuat infografis',
+            'Gagal memuat berita kegiatan',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -200,7 +187,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
             height: 44,
             child: ElevatedButton(
               onPressed: () => setState(() {
-                _infographicsFuture = ApiService().getInfographic();
+                _activityNewsFuture = ApiService().getActivityNews();
               }),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF007AFF),
@@ -236,14 +223,14 @@ class _InfographicScreenState extends State<InfographicScreen> {
               shape: BoxShape.circle,
             ),
             child: const Icon(
-              Icons.image_not_supported_rounded,
+              Icons.newspaper_outlined,
               color: Color(0xFF007AFF),
               size: 36,
             ),
           ),
           const SizedBox(height: 20),
           const Text(
-            'Belum ada infografis',
+            'Belum ada berita kegiatan',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -252,7 +239,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Infografis akan segera tersedia',
+            'Berita kegiatan akan segera tersedia',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade600,
@@ -263,78 +250,76 @@ class _InfographicScreenState extends State<InfographicScreen> {
     );
   }
 
-  Widget _buildInfographicsList() {
-    return ValueListenableBuilder<List<Infographic>>(
-      valueListenable: _infographics,
-      builder: (context, infographics, child) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+  Widget _buildActivityNewsList(List<ActivityNews> data) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF007AFF).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.info_outline_rounded,
+                  color: Color(0xFF007AFF),
+                  size: 20,
                 ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.info_outline_rounded,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '${data.length} berita kegiatan tersedia',
+                    style: const TextStyle(
+                      fontSize: 14,
                       color: Color(0xFF007AFF),
-                      size: 20,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        '${infographics.length} infografis tersedia',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF007AFF),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: infographics.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 20),
-                  itemBuilder: (context, index) => InfographicCard(
-                    infographic: infographics[index],
-                  ).animate().fadeIn(duration: 300.ms, delay: (index * 60).ms),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        );
-      },
+          const SizedBox(height: 20),
+          Expanded(
+            child: ListView.separated(
+              itemCount: data.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 20),
+              itemBuilder: (context, index) {
+                final item = data[index];
+                return ActivityNewsCard(
+                  activityNews: item,
+                ).animate().fadeIn(duration: 300.ms, delay: (index * 60).ms);
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class InfographicCard extends StatefulWidget {
-  final Infographic infographic;
+class ActivityNewsCard extends StatefulWidget {
+  final ActivityNews activityNews;
 
-  const InfographicCard({
+  const ActivityNewsCard({
     super.key,
-    required this.infographic,
+    required this.activityNews,
   });
 
   @override
-  State<InfographicCard> createState() => _InfographicCardState();
+  State<ActivityNewsCard> createState() => _ActivityNewsCardState();
 }
 
-class _InfographicCardState extends State<InfographicCard> {
+class _ActivityNewsCardState extends State<ActivityNewsCard> {
   bool _isDownloading = false;
   bool _isSharing = false;
 
-  String get _imageUrl => '${ApiConfig.storageUrl}/${widget.infographic.image_url}';
-  String get _filename => '${widget.infographic.title.replaceAll(' ', '_').toLowerCase()}.png';
+  String get _fileName =>
+      '${widget.activityNews.title.replaceAll(' ', '_').toLowerCase()}.png';
 
   @override
   Widget build(BuildContext context) {
@@ -356,7 +341,7 @@ class _InfographicCardState extends State<InfographicCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.infographic.title,
+              widget.activityNews.title,
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -368,16 +353,16 @@ class _InfographicCardState extends State<InfographicCard> {
             const SizedBox(height: 16),
             _buildActionButtons(),
             const SizedBox(height: 12),
-            if (widget.infographic.description != null) ...[
+            if (widget.activityNews.summary != null &&
+                widget.activityNews.summary!.isNotEmpty)
               Text(
-                widget.infographic.description!,
+                widget.activityNews.summary!,
                 style: TextStyle(
                   fontSize: 14,
                   height: 1.5,
                   color: Colors.grey.shade600,
                 ),
               ),
-            ],
           ],
         ),
       ),
@@ -385,42 +370,65 @@ class _InfographicCardState extends State<InfographicCard> {
   }
 
   Widget _buildImage() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: AspectRatio(
-          aspectRatio: 9 / 16,
-          child: CachedNetworkImage(
-            imageUrl: _imageUrl,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                ActivityNewsDetailScreen(activityNews: widget.activityNews),
+          ),
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Image.network(
+            widget.activityNews.imageUrl ?? '',
             fit: BoxFit.cover,
-            placeholder: (context, url) => Container(
-              color: Colors.grey.shade200,
-              child: const Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Color(0xFF007AFF),
+            height: 200,
+            width: double.infinity,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(16),
                 ),
-              ),
-            ),
-            errorWidget: (context, url, error) => Container(
-              color: Colors.grey.shade200,
-              child: const Center(
-                child: Icon(
-                  Icons.broken_image_rounded,
-                  color: Colors.grey,
-                  size: 40,
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Color(0xFF007AFF),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.broken_image_rounded,
+                    color: Colors.grey,
+                    size: 40,
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -435,7 +443,7 @@ class _InfographicCardState extends State<InfographicCard> {
             icon: Icons.download_rounded,
             label: 'Unduh',
             isLoading: _isDownloading,
-            onTap: _downloadInfographic,
+            onTap: _downloadImage,
             color: const Color(0xFF34C759),
           ),
         ),
@@ -445,7 +453,7 @@ class _InfographicCardState extends State<InfographicCard> {
             icon: Icons.share_rounded,
             label: 'Bagikan',
             isLoading: _isSharing,
-            onTap: _shareInfographic,
+            onTap: _shareImage,
             color: const Color(0xFF007AFF),
           ),
         ),
@@ -502,7 +510,7 @@ class _InfographicCardState extends State<InfographicCard> {
     );
   }
 
-  Future<void> _downloadInfographic() async {
+  Future<void> _downloadImage() async {
     if (_isDownloading) return;
 
     setState(() {
@@ -511,8 +519,8 @@ class _InfographicCardState extends State<InfographicCard> {
 
     try {
       await DownloadHelper.downloadImage(
-        imageUrl: _imageUrl,
-        fileName: _filename,
+        imageUrl: widget.activityNews.imageUrl ?? '',
+        fileName: _fileName,
       );
 
       if (!mounted) return;
@@ -529,7 +537,7 @@ class _InfographicCardState extends State<InfographicCard> {
               Icon(Icons.check_circle, color: Colors.white, size: 20),
               SizedBox(width: 8),
               Text(
-                'Infografis berhasil diunduh',
+                'Berita kegiatan berhasil diunduh',
                 style: TextStyle(color: Colors.white),
               ),
             ],
@@ -551,7 +559,7 @@ class _InfographicCardState extends State<InfographicCard> {
               Icon(Icons.error_outline, color: Colors.white, size: 20),
               SizedBox(width: 8),
               Text(
-                'Gagal mengunduh infografis',
+                'Gagal mengunduh berita kegiatan',
                 style: TextStyle(color: Colors.white),
               ),
             ],
@@ -567,7 +575,7 @@ class _InfographicCardState extends State<InfographicCard> {
     }
   }
 
-  Future<void> _shareInfographic() async {
+  Future<void> _shareImage() async {
     if (_isSharing) return;
 
     setState(() {
@@ -576,13 +584,13 @@ class _InfographicCardState extends State<InfographicCard> {
 
     try {
       final file = await DownloadHelper.downloadImage(
-        imageUrl: _imageUrl,
-        fileName: _filename,
+        imageUrl: widget.activityNews.imageUrl ?? '',
+        fileName: _fileName,
       );
 
       await Share.shareXFiles(
         [XFile(file.path)],
-        text: widget.infographic.title,
+        text: widget.activityNews.title,
       );
     } catch (_) {
       if (!mounted) return;
@@ -599,7 +607,7 @@ class _InfographicCardState extends State<InfographicCard> {
               Icon(Icons.error_outline, color: Colors.white, size: 20),
               SizedBox(width: 8),
               Text(
-                'Gagal membagikan infografis',
+                'Gagal membagikan berita kegiatan',
                 style: TextStyle(color: Colors.white),
               ),
             ],

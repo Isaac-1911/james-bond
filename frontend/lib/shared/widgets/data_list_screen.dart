@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../features/news/news_detail_screen.dart';
 
 class DataListScreen<T> extends StatefulWidget {
   final String title;

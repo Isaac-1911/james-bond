@@ -1,29 +1,25 @@
 import 'package:flutter/material.dart';
-import '../../models/publication.dart';
+import '../../models/activity_news.dart';
 import '../../core/helpers/download_helper.dart';
-import '../../core/config/api_config.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class PublicationDetailScreen extends StatefulWidget {
-  final Publication publication;
+class ActivityNewsDetailScreen extends StatefulWidget {
+  final ActivityNews activityNews;
 
-  const PublicationDetailScreen({super.key, required this.publication});
+  const ActivityNewsDetailScreen({super.key, required this.activityNews});
 
   @override
-  State<PublicationDetailScreen> createState() =>
-      _PublicationDetailScreenState();
+  State<ActivityNewsDetailScreen> createState() =>
+      _ActivityNewsDetailScreenState();
 }
 
-class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
+class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
   bool _isDownloading = false;
   bool _isSharing = false;
 
   String get _fileName =>
-      '${widget.publication.title.replaceAll(' ', '_')}.pdf';
-  String? get _coverUrl => widget.publication.coverUrl != null
-      ? '${ApiConfig.storageUrl}/${widget.publication.coverUrl}'
-      : null;
+      '${widget.activityNews.title.replaceAll(' ', '_')}.png';
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +39,8 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                     _buildCover(),
                     const SizedBox(height: 24),
                     _buildHeader(),
-                    const SizedBox(height: 24),
-                    _buildInfoCards(),
                     const SizedBox(height: 32),
-                    _buildAbstract(),
+                    _buildContent(),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -93,7 +87,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
               ),
             ),
             const Text(
-              'Detail Publikasi',
+              'Detail Berita',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -108,7 +102,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.book_rounded,
+                Icons.newspaper_rounded,
                 color: Color(0xFF007AFF),
                 size: 22,
               ),
@@ -120,82 +114,68 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
   }
 
   Widget _buildCover() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Container(
-      height: 320, // Tinggi lebih untuk efek hero
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: _coverUrl != null
-            ? CachedNetworkImage(
-                imageUrl: _coverUrl!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-                placeholder: (context, url) => Container(
-                  color: Colors.grey.shade200,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        height: 280,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: widget.activityNews.imageUrl != null
+              ? CachedNetworkImage(
+                  imageUrl: widget.activityNews.imageUrl!,
+                  fit: BoxFit.cover,
                   width: double.infinity,
                   height: double.infinity,
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Color(0xFF007AFF),
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey.shade200,
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Color(0xFF007AFF),
+                      ),
                     ),
                   ),
-                ),
-                errorWidget: (context, url, error) => Container(
+                  errorWidget: (context, url, error) => Container(
+                    color: Colors.grey.shade200,
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: const Center(
+                      child: Icon(
+                        Icons.newspaper_rounded,
+                        color: Color(0xFF007AFF),
+                        size: 60,
+                      ),
+                    ),
+                  ),
+                )
+              : Container(
                   color: const Color(0xFF007AFF).withOpacity(0.1),
                   width: double.infinity,
                   height: double.infinity,
                   child: const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.picture_as_pdf_rounded,
-                          color: Color(0xFF007AFF),
-                          size: 60,
-                        ),
-                        SizedBox(height: 12),
-                        Text(
-                          'Cover Tidak Tersedia',
-                          style: TextStyle(
-                            color: Color(0xFF007AFF),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                    child: Icon(
+                      Icons.newspaper_rounded,
+                      color: Color(0xFF007AFF),
+                      size: 60,
                     ),
                   ),
                 ),
-              )
-            : Container(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
-                width: double.infinity,
-                height: double.infinity,
-                child: const Center(
-                  child: Icon(
-                    Icons.picture_as_pdf_rounded,
-                    color: Color(0xFF007AFF),
-                    size: 60,
-                  ),
-                ),
-              ),
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildHeader() {
     return Padding(
@@ -204,137 +184,60 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.publication.title,
+            widget.activityNews.title,
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
               color: Color(0xFF1D1D1F),
             ),
           ),
-          if (widget.publication.releaseDate != null) ...[
-            const SizedBox(height: 12),
+          if (widget.activityNews.releaseDate != null) ...[
+            const SizedBox(height: 16),
             Row(
               children: [
                 Icon(
                   Icons.calendar_month_rounded,
                   color: Colors.grey.shade500,
-                  size: 16,
+                  size: 18,
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 8),
                 Text(
-                  'Dirilis ${widget.publication.releaseDate!}',
-                  style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
+                  'Dirilis ${widget.activityNews.releaseDate!}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
               ],
             ),
           ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoCards() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: _buildInfoCard(
-                  icon: Icons.inventory_2_rounded,
-                  title: 'Katalog',
-                  value: widget.publication.catalogNumber?.toString() ?? '-',
-                  color: const Color(0xFF007AFF),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildInfoCard(
-                  icon: Icons.menu_book_rounded,
-                  title: 'Publikasi',
-                  value: widget.publication.publicationNumber ?? '-',
-                  color: const Color(0xFF34C759),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildInfoCard(
-                  icon: Icons.qr_code_2_rounded,
-                  title: 'ISSN / ISBN',
-                  value: widget.publication.isbn ?? '-',
-                  color: const Color(0xFFFF9500),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildInfoCard(
-                  icon: Icons.language_rounded,
-                  title: 'Bahasa',
-                  value: 'Indonesia', // Default value
-                  color: const Color(0xFFAF52DE),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoCard({
-    required IconData icon,
-    required String title,
-    required String value,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
+          const SizedBox(height: 20),
           Container(
-            width: 44,
-            height: 44,
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
+              color: const Color(0xFF007AFF).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, color: color, size: 22),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF6E6E73),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: color,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.info_outline_rounded,
+                  color: Color(0xFF007AFF),
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Berita Kegiatan BPS',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Color(0xFF007AFF),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -342,9 +245,9 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
     );
   }
 
-  Widget _buildAbstract() {
-    if (widget.publication.summary == null ||
-        widget.publication.summary!.isEmpty) {
+  Widget _buildContent() {
+    if (widget.activityNews.summary == null ||
+        widget.activityNews.summary!.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -354,7 +257,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Abstraksi',
+            'Konten Berita',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -369,17 +272,17 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withOpacity(0.06),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
               ],
             ),
             child: Text(
-              widget.publication.summary!,
+              widget.activityNews.summary!,
               style: TextStyle(
-                fontSize: 15,
-                height: 1.6,
+                fontSize: 16,
+                height: 1.7,
                 color: Colors.grey.shade800,
               ),
             ),
@@ -407,7 +310,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
         child: Row(
           children: [
             GestureDetector(
-              onTap: _isSharing ? null : _sharePublication,
+              onTap: _isSharing ? null : _shareActivityNews,
               child: Container(
                 width: 56,
                 height: 56,
@@ -436,7 +339,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
-                onPressed: _isDownloading ? null : _downloadPublication,
+                onPressed: _isDownloading ? null : _downloadImage,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF007AFF),
                   foregroundColor: Colors.white,
@@ -456,7 +359,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                         ),
                       )
                     : const Text(
-                        'Unduh PDF',
+                        'Unduh Gambar',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -470,7 +373,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
     );
   }
 
-  Future<void> _downloadPublication() async {
+  Future<void> _downloadImage() async {
     if (_isDownloading) return;
 
     setState(() {
@@ -478,10 +381,53 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
     });
 
     try {
-      await DownloadHelper.downloadPublicationPdf(
-        context: context,
-        publicationId: widget.publication.id,
+      await DownloadHelper.downloadImage(
+        imageUrl: widget.activityNews.imageUrl ?? '',
         fileName: _fileName,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: const Color(0xFF34C759),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Text(
+                'Gambar berhasil diunduh',
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: const Color(0xFFFF3B30),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          content: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Text(
+                'Gagal mengunduh gambar',
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
       );
     } finally {
       if (mounted) {
@@ -492,7 +438,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
     }
   }
 
-  Future<void> _sharePublication() async {
+  Future<void> _shareActivityNews() async {
     if (_isSharing) return;
 
     setState(() {
@@ -500,11 +446,10 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
     });
 
     try {
-      final text =
-          widget.publication.releaseDate != null &&
-              widget.publication.releaseDate!.isNotEmpty
-          ? '${widget.publication.title}\n\nDirilis: ${widget.publication.releaseDate}'
-          : widget.publication.title;
+      final text = widget.activityNews.releaseDate != null &&
+              widget.activityNews.releaseDate!.isNotEmpty
+          ? '${widget.activityNews.title}\n\nDirilis: ${widget.activityNews.releaseDate}'
+          : widget.activityNews.title;
 
       await Share.share(text);
     } finally {

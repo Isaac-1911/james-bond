@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/news/news_detail_screen.dart';
 import 'package:frontend/models/release_plan.dart';
 import 'package:frontend/features/publication/publication_detail_screen.dart';
-import 'package:frontend/features/brs/brs_detail_screen.dart';
 import 'package:frontend/core/services/api_service.dart';
 
 class ReleaseCard extends StatelessWidget {

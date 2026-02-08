@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:frontend/features/activity_news/activity_news_screen.dart';
 import 'package:frontend/features/news/news_list_screen.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../home/home_screen.dart';
 import '../statistic/screens/statistic_subject_screen.dart';
 import '../publication/publication_list_screen.dart';
 import '../infographic/infographic_screen.dart';
 import '../release_plan/release_plan_screen.dart';
-import 'package:frontend/features/common/simple_page.dart';
+import '../search/global_search_screen.dart';
+import '../../shared/widgets/onboarding_popup.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -15,13 +18,59 @@ class MainNavigation extends StatefulWidget {
   State<MainNavigation> createState() => _MainNavigationState();
 }
 
-class _MainNavigationState extends State<MainNavigation> {
+class _MainNavigationState extends State<MainNavigation>
+    with WidgetsBindingObserver {
   int _currentIndex = 0;
   String _lainnyaPage = 'infografis';
+
+  // 🔑 FLAG SESSION (RESET SETIAP APP DIBUKA ULANG)
+  bool _hasShownPopupThisSession = false;
+
   void switchTab(int index) {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // daftar observer lifecycle
+    WidgetsBinding.instance.addObserver(this);
+
+    // tampilkan popup SEKALI di awal session
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showOnboardingIfNeeded();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // 🔥 INTI LOGIC POPUP
+  void _showOnboardingIfNeeded() {
+    if (_hasShownPopupThisSession) return;
+
+    _hasShownPopupThisSession = true;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => OnboardingPopup(
+        images: const [
+          'assets/onboarding/slide1.png',
+          'assets/onboarding/slide2.png',
+          'assets/onboarding/slide3.png',
+        ],
+        onClose: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
   }
 
   void openLainnya(String page) {
@@ -29,6 +78,16 @@ class _MainNavigationState extends State<MainNavigation> {
       _currentIndex = 4;
       _lainnyaPage = page;
     });
+  }
+
+  Future<void> _openTentangKami() async {
+    final Uri url = Uri.parse(
+      'https://ppid.bps.go.id/app/konten/3511/Profil-BPS.html',
+    );
+
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Tidak dapat membuka halaman Tentang Kami');
+    }
   }
 
   void _showMoreMenu(BuildContext context) {
@@ -88,14 +147,6 @@ class _MainNavigationState extends State<MainNavigation> {
                   },
                 ),
                 _menuItem(
-                  icon: CupertinoIcons.bell,
-                  title: 'Notifikasi',
-                  onTap: () {
-                    Navigator.pop(context);
-                    openLainnya('notifikasi');
-                  },
-                ),
-                _menuItem(
                   icon: CupertinoIcons.news,
                   title: 'Berita Resmi Statistik',
                   onTap: () {
@@ -114,9 +165,9 @@ class _MainNavigationState extends State<MainNavigation> {
                 _menuItem(
                   icon: CupertinoIcons.info,
                   title: 'Tentang Kami',
-                  onTap: () {
+                  onTap: () async {
                     Navigator.pop(context);
-                    openLainnya('tentang-kami');
+                    await _openTentangKami();
                   },
                 ),
               ],
@@ -154,11 +205,11 @@ class _MainNavigationState extends State<MainNavigation> {
   }
 
   List<Widget> get _pages => [
-    HomeScreen(onNavigate: switchTab, onOpenLainnya: openLainnya,),
+    HomeScreen(onNavigate: switchTab, onOpenLainnya: openLainnya),
     const StatisticSubjectScreen(),
-    const Center(child: Text('Cari')),
+    const GlobalSearchScreen(),
     const PublicationListScreen(),
-    _buildLainnyaPage(), // TAB "LAINNYA"
+    _buildLainnyaPage(),
   ];
 
   @override
@@ -166,43 +217,49 @@ class _MainNavigationState extends State<MainNavigation> {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F7),
       body: IndexedStack(index: _currentIndex, children: _pages),
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 12,
-              offset: const Offset(0, -3),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          child: GNav(
-            selectedIndex: _currentIndex,
-            onTabChange: (index) {
-              if (index == 4) {
-                _showMoreMenu(context);
-                return;
-              }
-              switchTab(index);
-            },
-            backgroundColor: Colors.transparent,
-            color: Colors.grey.shade500,
-            activeColor: const Color(0xFF007AFF),
-            tabBackgroundColor: const Color(0xFF007AFF).withOpacity(0.1),
-            gap: 4,
-            padding: const EdgeInsets.all(12),
-            tabs: const [
-              GButton(icon: CupertinoIcons.home, text: 'Beranda'),
-              GButton(icon: CupertinoIcons.chart_bar_alt_fill, text: 'Tabel'),
-              GButton(icon: CupertinoIcons.search, text: 'Cari'),
-              GButton(icon: CupertinoIcons.book, text: 'Publikasi'),
-              GButton(icon: CupertinoIcons.line_horizontal_3, text: 'Lainnya'),
+      bottomNavigationBar: SafeArea(
+        top: false, // ⛔ jangan dorong ke atas
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 12,
+                offset: const Offset(0, -3),
+              ),
             ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: GNav(
+              selectedIndex: _currentIndex,
+              onTabChange: (index) {
+                if (index == 4) {
+                  _showMoreMenu(context);
+                  return;
+                }
+                switchTab(index);
+              },
+              backgroundColor: Colors.transparent,
+              color: Colors.grey.shade500,
+              activeColor: const Color(0xFF007AFF),
+              tabBackgroundColor: const Color(0xFF007AFF).withOpacity(0.1),
+              gap: 4,
+              padding: const EdgeInsets.all(12),
+              tabs: const [
+                GButton(icon: CupertinoIcons.home, text: 'Beranda'),
+                GButton(icon: CupertinoIcons.chart_bar_alt_fill, text: 'Tabel'),
+                GButton(icon: CupertinoIcons.search, text: 'Cari'),
+                GButton(icon: CupertinoIcons.book, text: 'Publikasi'),
+                GButton(
+                  icon: CupertinoIcons.line_horizontal_3,
+                  text: 'Lainnya',
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -213,22 +270,12 @@ class _MainNavigationState extends State<MainNavigation> {
     switch (_lainnyaPage) {
       case 'rencana-terbit':
         return const ReleasePlanScreen();
-
       case 'infografis':
         return const InfographicScreen();
-
-      case 'notifikasi':
-        return const SimplePage(title: 'Notifikasi');
-
       case 'brs':
         return const NewsListScreen();
-
       case 'berita-kegiatan':
-        return const SimplePage(title: 'Berita Kegiatan');
-
-      case 'tentang-kami':
-        return const SimplePage(title: 'Tentang Kami');
-
+        return const ActivityNewsScreen();
       default:
         return const InfographicScreen();
     }

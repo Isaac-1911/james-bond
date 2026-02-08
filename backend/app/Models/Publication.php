@@ -17,21 +17,30 @@ class Publication extends Model
         'publication_category',
         'cover_url',
         'file_url',
-        'publication_category',
-        'description'
+        'description',
+        'catalog_number',
+        'publication_number',
+        'isbn',
+        'download_count',
+        'is_featured',
+
+    ];
+
+    protected $casts = [
+        'is_featured' => 'boolean'
     ];
 
     public $timestamps = true;
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class, 'publication_category');
     }
 
-   public function getFileUrlAttribute($value)
-{
-    return $value
-        ? asset('storage/' . $value)
-        : null;
-}
-
+    public function getFileUrlAttribute($value)
+    {
+        return $value
+            ? asset('storage/' . $value)
+            : null;
+    }
 }

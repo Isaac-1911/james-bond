@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityNewsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
@@ -11,7 +12,11 @@ use App\Http\Controllers\SearchHistoryController;
 use App\Http\Controllers\Api\StatisticTableController;
 use App\Http\Controllers\Api\StatisticSubjectController;
 use App\Http\Controllers\Api\StatisticSubsubjectController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\ReleasePlanController;
+use App\Models\Infographic;
+use App\Models\StatisticTable;
 
 
 /*
@@ -38,18 +43,13 @@ Route::get('/publication', [PublicationController::class, 'index']);
 Route::get('/publication/{id}', [PublicationController::class, 'show']);
 
 
-// Statistic Data
-// Route::get('/statistics', [StatisticDataController::class, 'index']);
-// Route::get('/statistics/{id}', [StatisticDataController::class, 'show']);
-// Route::get('/statistics/chart', [StatisticDataController::class, 'chart']);
-
 Route::get('/dashboard/summary', function () {
     return response()->json([
         'status' => 'success',
         'data' => [
             'news_count' => \App\Models\News::count(),
             'publication_count' => \App\Models\Publication::count(),
-            'statistic_count' => \App\Models\StatisticData::count(),
+            'statistic_count' => \App\Models\StatisticTable::count(),
             'last_update' => now()->toDateString(),
         ]
     ]);
@@ -62,18 +62,29 @@ Route::get('/search', function (Illuminate\Http\Request $request) {
         'status' => 'success',
         'data' => [
             'news' => \App\Models\News::where('title', 'like', "%$q%")->get(),
-            'statistics' => \App\Models\StatisticData::where('title', 'like', "%$q%")->get(),
+
             'publications' => \App\Models\Publication::where('title', 'like', "%$q%")->get(),
+
+            'statistics' => StatisticTable::with([
+                'subsubject:id,name,subject_id',
+                'subsubject.subject:id,name'
+            ])
+                ->where('title', 'like', "%$q%")
+                ->get()
+                ->map(function ($table) {
+                    return [
+                        'id' => $table->id,
+                        'title' => $table->title,
+                        'subject_name' => $table->subsubject->subject->name ?? null,
+                        'subsubject_name' => $table->subsubject->name ?? null,
+                    ];
+                }),
+
+            'infographics' => Infographic::where('title', 'like', "%$q%")->get(),
         ]
     ]);
 });
 
-// Route::prefix('/statistic')->group(function () {
-//     Route::get('/subjects', [StatisticController::class, 'subjects']);
-//     Route::get('/subsubjects/{subject}', [StatisticController::class, 'subsubjects']);
-//     Route::get('/indicators/{subsubject}', [StatisticController::class, 'indicators']);
-//     Route::get('/data/{indicator}', [StatisticController::class, 'data']);
-// });
 
 Route::prefix('/statistic')->group(function () {
     Route::get('/subjects', [StatisticSubjectController::class, 'index']);
@@ -86,8 +97,15 @@ Route::prefix('/statistic')->group(function () {
 Route::get('/statistic/table/{id}', [StatisticTableController::class, 'show']);
 Route::get('/statistic/tables', [StatisticTableController::class, 'indexAll']);
 
-Route::get('/release-plans',[ReleasePlanController::class, 'index']);
+Route::get('/release-plans', [ReleasePlanController::class, 'index']);
+Route::get('/release-plans/{id}', [ReleasePlanController::class, 'show']);
 
+Route::get('/activity-news', [ActivityNewsController::class, 'index']);
+Route::get('/activity-news/{id}', [ActivityNewsController::class, 'show']);
+
+Route::post('/feedback', [FeedbackController::class, 'store']);
+
+Route::post('/chat', [ChatController::class, 'chat']);
 
 /*
 |--------------------------------------------------------------------------
@@ -123,6 +141,16 @@ Route::middleware('auth:sanctum', 'is_admin')->group(function () {
     Route::post('/statistics', [StatisticDataController::class, 'store']);
     Route::put('/statistics/{id}', [StatisticDataController::class, 'update']);
     Route::delete('/statistics/{id}', [StatisticDataController::class, 'destroy']);
+
+    // Activity News
+    Route::post('/activity-news', [ActivityNewsController::class, 'store']);
+    Route::put('/activity-news/{id}', [ActivityNewsController::class, 'update']);
+    Route::delete('activity-news/{id}', [ActivityNewsController::class, 'destroy']);
+
+    // Release Plans
+    Route::post('/release-plans', [ReleasePlanController::class, 'store']);
+    Route::put('/release-plans/{id}', [ReleasePlanController::class, 'update']);
+    Route::delete('/release-plans/{id}', [ReleasePlanController::class, 'destroy']);
 
     // Search History (Opsional)
     Route::get('/search-history', [SearchHistoryController::class, 'index']);

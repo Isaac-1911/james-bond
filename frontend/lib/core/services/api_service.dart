@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:frontend/models/activity_news.dart';
 import 'package:frontend/models/category.dart' as model;
 import '../config/api_config.dart';
 import '../../models/news.dart';
@@ -7,6 +8,7 @@ import '../../models/publication.dart';
 import '../../models/infographic.dart';
 import '../../models/statistic_data.dart';
 import '../../models/release_plan.dart';
+import '../../models/global_search_item.dart';
 
 class ApiService {
   final Dio _dio = Dio(
@@ -16,41 +18,29 @@ class ApiService {
     ),
   );
 
-  // Future<List<News>> getNews() async {
-  //   final response = await _dio.get('/news');
+  Future<List<News>> getNews({String? query}) async {
+    try {
+      final response = await _dio.get('/news');
 
-  //   final List data = response.data['data'];
-  //   return data.map((e) => News.fromJson(e)).toList();
-  // }
+      debugPrint('🟢 GET /news → ${response.statusCode}');
 
-  Future<List<News>> getNews({
-  String? query,
-}) async {
-  try {
-    final response = await _dio.get('/news');
+      final List data = response.data['data'];
 
-    debugPrint('🟢 GET /news → ${response.statusCode}');
+      List<News> items = data.map((e) => News.fromJson(e)).toList();
 
-    final List data = response.data['data'];
+      // 🔎 OPTIONAL: client-side search (AMAN)
+      if (query != null && query.isNotEmpty) {
+        final q = query.toLowerCase();
+        items = items.where((n) => n.title.toLowerCase().contains(q)).toList();
+      }
 
-    List<News> items =
-        data.map((e) => News.fromJson(e)).toList();
-
-    // 🔎 OPTIONAL: client-side search (AMAN)
-    if (query != null && query.isNotEmpty) {
-      final q = query.toLowerCase();
-      items = items
-          .where((n) => n.title.toLowerCase().contains(q))
-          .toList();
+      return items;
+    } catch (e, stackTrace) {
+      debugPrint('❌ GET /news ERROR: $e');
+      debugPrint('$stackTrace');
+      rethrow;
     }
-
-    return items;
-  } catch (e, stackTrace) {
-    debugPrint('❌ GET /news ERROR: $e');
-    debugPrint('$stackTrace');
-    rethrow;
   }
-}
 
   Future<List<Infographic>> getInfographic() async {
     final res = await _dio.get('/infographic');
@@ -60,26 +50,32 @@ class ApiService {
         .toList();
   }
 
+  Future<List<ActivityNews>> getActivityNews() async {
+    final res = await _dio.get('/activity-news');
+
+    return (res.data['data'] as List)
+        .map((json) => ActivityNews.fromJson(json))
+        .toList();
+  }
+
   Future<Map<String, dynamic>> getPublications({
     int page = 1,
     int limit = 10,
     String? sort,
     int? category,
     String? query,
+    String? filter,
   }) async {
     try {
       final response = await _dio.get('/publication');
-      debugPrint('API OK: ${response.statusCode}');
-    } catch (e) {
-      debugPrint('API ERROR: $e');
-    }
+    } catch (e) {}
 
     final queryParameters = {
       'page': page,
       'limit': limit,
       if (query != null && query.isNotEmpty) 'q': query,
       if (sort != null) 'sort': sort,
-      if (category != null) 'category': category,
+      if (filter != null) 'filter': filter,
     };
 
     final response = await _dio.get(
@@ -131,11 +127,26 @@ class ApiService {
     return _infographicCache!;
   }
 
+  static Future<List<ActivityNews>>? _activityNewsCache;
+
+  Future<List<ActivityNews>> getActivityNewsCached() {
+    _activityNewsCache ??= _fetchActivityNews();
+    return _activityNewsCache!;
+  }
+
   Future<List<Infographic>> _fetchInfographic() async {
     final res = await _dio.get('/infographic');
 
     return (res.data['data'] as List)
         .map((json) => Infographic.fromJson(json))
+        .toList();
+  }
+
+  Future<List<ActivityNews>> _fetchActivityNews() async {
+    final res = await _dio.get('/activity-news');
+
+    return (res.data['data'] as List)
+        .map((json) => ActivityNews.fromJson(json))
         .toList();
   }
 
@@ -155,5 +166,79 @@ class ApiService {
   Future<News> getNewsById(int id) async {
     final res = await _dio.get('/news/$id');
     return News.fromJson(res.data['data']);
+  }
+
+  Future<List<GlobalSearchItem>> globalSearch(String query) async {
+    final res = await _dio.get('/search', queryParameters: {'q': query});
+
+    final data = res.data['data'];
+
+    final List<GlobalSearchItem> results = [];
+
+    // 🟦 News
+    for (final item in data['news']) {
+      results.add(
+        GlobalSearchItem(
+          type: SearchItemType.news,
+          id: item['news_id'],
+          title: item['title'],
+          subtitle: item['release_date'],
+          tag: 'Berita Resmi Statistik',
+        ),
+      );
+    }
+
+    // 🟧 Publications
+    for (final item in data['publications']) {
+      results.add(
+        GlobalSearchItem(
+          type: SearchItemType.publication,
+          id: item['publication_id'],
+          title: item['title'],
+          subtitle: item['release_date'],
+          tag: 'Publikasi',
+        ),
+      );
+    }
+
+    // 🟩 Statistics
+    for (final item in data['statistics'] ?? []) {
+      results.add(
+        GlobalSearchItem(
+          type: SearchItemType.statistic,
+          id: item['id'],
+          title: item['title'],
+          subtitle: item['subsubject_name'] ?? item['subject_name'],
+          tag: 'Tabel Statistik',
+        ),
+      );
+    }
+
+    // 🟪 INFOGRAFIS
+    for (final item in data['infographics'] ?? []) {
+      results.add(
+        GlobalSearchItem(
+          type: SearchItemType.infographic,
+          id: item['infographic_id'],
+          title: item['title'],
+          subtitle: item['description'],
+          tag: 'Infografis',
+        ),
+      );
+    }
+
+    return results;
+  }
+
+  Future<void> submitFeedback({
+    required int rating,
+    String? job,
+    List<String>? tags,
+    String? message,
+  }) async {
+    await _dio.post(
+      '/feedback',
+      data: {'rating': rating, 'job': job, 'tags': tags, 'message': message},
+    );
   }
 }

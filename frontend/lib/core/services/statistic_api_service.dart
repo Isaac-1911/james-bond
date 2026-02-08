@@ -3,7 +3,6 @@ import '../config/api_config.dart';
 import '../../models/statistic_subject.dart';
 import '../../models/statistic_subsubject.dart';
 import '../../models/statistic_table.dart';
-import 'package:flutter/foundation.dart';
 
 class StatisticApiService {
   static final Dio _dio = Dio(

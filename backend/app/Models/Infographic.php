@@ -16,4 +16,9 @@ class Infographic extends Model
     ];
 
     public $timestamps = true;
+
+    // public function getImageUrlAttribute($value)
+    // {
+    //     return $value ? asset('storage/' . $value) : null;
+    // }
 }
