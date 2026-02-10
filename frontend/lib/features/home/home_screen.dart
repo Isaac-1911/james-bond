@@ -1,5 +1,4 @@
 import 'dart:core';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:frontend/models/publication.dart';
@@ -77,15 +76,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<void> _fetchPublications() async {
     try {
       final result = await _apiService.getPublications(page: 1, limit: 3);
+      final List<Publication> items = result['items'] ?? [];
+
+      if (!mounted) return;
 
       setState(() {
-        _publications = result['items'];
+        _publications
+          ..clear()
+          ..addAll(items);
+
         _isLoadingPublication = false;
       });
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         _isLoadingPublication = false;
       });
+
+      debugPrint('❌ fetch publications error: $e');
     }
   }
 
@@ -117,28 +126,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         },
         label: Row(
           children: [
-            Container(
-              // decoration: BoxDecoration(
-              //   gradient: LinearGradient(
-              //     colors: [const Color(0xFF667EEA), const Color(0xFF764BA2)],
-              //     begin: Alignment.topLeft,
-              //     end: Alignment.bottomRight,
-              //   ),
-              //   shape: BoxShape.circle,
-              //   boxShadow: [
-              //     BoxShadow(
-              //       color: const Color(0xFF667EEA).withOpacity(0.4),
-              //       blurRadius: 12,
-              //       spreadRadius: 2,
-              //       offset: const Offset(0, 4),
-              //     ),
-              //   ],
-              // ),
-              child: const Padding(
-                padding: EdgeInsets.all(10),
-                child: Icon(Icons.rocket_launch_outlined, size: 20),
-              ),
+            const Padding(
+              padding: EdgeInsets.all(10),
+              child: Icon(Icons.rocket_launch_outlined, size: 20),
             ),
+
             // const SizedBox(width: 12),
             // const Text(
             //   'Kirim Feedback',
@@ -177,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
+                          color: Colors.black.withValues(alpha: 0.08),
                           blurRadius: 16,
                           offset: const Offset(0, 4),
                         ),
@@ -223,7 +215,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.05),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.05,
+                                          ),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
@@ -269,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             gradient: LinearGradient(
                               colors: [
                                 const Color(0xFF007AFF),
-                                const Color(0xFF007AFF).withOpacity(0.3),
+                                const Color(0xFF007AFF).withValues(alpha: 0.3),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(2),
@@ -321,7 +315,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
+                                color: Colors.black.withValues(alpha: 0.08),
                                 blurRadius: 16,
                                 offset: const Offset(0, 8),
                               ),
@@ -395,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             BoxShadow(
                                               color: const Color(
                                                 0xFF007AFF,
-                                              ).withOpacity(0.3),
+                                              ).withValues(alpha: 0.3),
                                               blurRadius: 8,
                                               offset: const Offset(0, 2),
                                             ),
@@ -639,7 +633,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   final item = latest[index];
                                   return _InfographicHomeCard(
                                     imageUrl:
-                                        '${ApiConfig.storageUrl}/${item.image_url}',
+                                        '${ApiConfig.storageUrl}/${item.imageUrl}',
                                     onTap: () {
                                       widget.onOpenLainnya('infografis');
                                     },
@@ -733,7 +727,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   // ================= FOOTER =================
                   Container(
                     padding: const EdgeInsets.all(20),
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     child: const Center(
                       child: Text(
                         '© 2026 Badan Pusat Statistik. All rights reserved.',
@@ -801,7 +795,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                  colors: [
+                    Colors.black.withValues(alpha: 0.6),
+                    Colors.transparent,
+                  ],
                 ),
               ),
             ),
@@ -917,7 +914,7 @@ class _QuickMenuItemState extends State<_QuickMenuItem>
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: widget.color.withOpacity(0.2),
+                    color: widget.color.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -931,7 +928,7 @@ class _QuickMenuItemState extends State<_QuickMenuItem>
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.95),
+                      color: Colors.white.withValues(alpha: 0.95),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(widget.icon, color: widget.color, size: 18),
@@ -1174,7 +1171,7 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        'Bantu kami meningkatkan layanan BPS',
+                        'Bantu kami meningkatkan menjadi lebih baik😉',
                         style: TextStyle(
                           fontSize: 15,
                           color: Color(0xFF6E6E73),
@@ -1182,7 +1179,7 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        'Seberapa puas Anda dengan website BPS?',
+                        'Seberapa puas Anda dengan aplikasi James Bond?',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -1327,7 +1324,7 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
                             backgroundColor: Colors.white,
                             selectedColor: const Color(
                               0xFF007AFF,
-                            ).withOpacity(0.1),
+                            ).withValues(alpha: 0.1),
                             checkmarkColor: const Color(0xFF007AFF),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -1397,7 +1394,7 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
                                       message: _controller.text,
                                     );
 
-                                    if (!mounted) return;
+                                    if (!context.mounted) return;
 
                                     Navigator.pop(context);
 
@@ -1497,7 +1494,7 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
             width: width,
             decoration: BoxDecoration(
               color: isSelected
-                  ? const Color(0xFF007AFF).withOpacity(0.08)
+                  ? const Color(0xFF007AFF).withValues(alpha: 0.08)
                   : Colors.transparent,
               border: Border.all(
                 color: isSelected

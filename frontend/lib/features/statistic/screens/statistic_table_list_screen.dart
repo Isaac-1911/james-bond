@@ -21,13 +21,14 @@ class StatisticTableListScreen extends StatefulWidget {
 
 class _StatisticTableListScreenState extends State<StatisticTableListScreen> {
   late final Future<List<StatisticTable>> _futureTables;
+  final StatisticApiService _statisticApi = StatisticApiService();
   final TextEditingController _searchController = TextEditingController();
   String _keyword = '';
 
   @override
   void initState() {
     super.initState();
-    _futureTables = StatisticApiService.getTables(widget.subsubjectId);
+    _futureTables = _statisticApi.getTables(widget.subsubjectId);
   }
 
   void _clearSearch() {
@@ -59,7 +60,7 @@ class _StatisticTableListScreenState extends State<StatisticTableListScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -105,7 +106,7 @@ class _StatisticTableListScreenState extends State<StatisticTableListScreen> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -129,7 +130,7 @@ class _StatisticTableListScreenState extends State<StatisticTableListScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -251,7 +252,7 @@ class _StatisticTableListScreenState extends State<StatisticTableListScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFFFF3B30).withOpacity(0.1),
+              color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -308,7 +309,7 @@ class _StatisticTableListScreenState extends State<StatisticTableListScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -370,7 +371,7 @@ class _StatisticTableListScreenState extends State<StatisticTableListScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -428,7 +429,7 @@ class _StatisticTableListScreenState extends State<StatisticTableListScreen> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     ),
@@ -442,7 +443,7 @@ class _StatisticTableListScreenState extends State<StatisticTableListScreen> {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF007AFF).withOpacity(0.1),
+                          color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -489,7 +490,7 @@ class _StatisticTableListScreenState extends State<StatisticTableListScreen> {
                                   decoration: BoxDecoration(
                                     color: const Color(
                                       0xFF34C759,
-                                    ).withOpacity(0.1),
+                                    ).withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
@@ -553,8 +554,20 @@ class _StatisticTableListScreenState extends State<StatisticTableListScreen> {
   }
 
   String _formatDate(DateTime date) {
-  final months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 
-                  'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-  return '${date.day} ${months[date.month - 1]} ${date.year}';
-}
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
+    ];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
 }

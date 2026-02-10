@@ -8,11 +8,10 @@ class StatisticTable {
   final String? source;
   final DateTime? lastUpdated;
 
-  // 🔥 METADATA TAMBAHAN (UNTUK SEARCH GLOBAL)
+  // 🔥 METADATA TAMBAHAN
   final String? subjectName;
   final String? subsubjectName;
 
-  // 🔥 TETAP ADA — JANGAN DIHAPUS
   final List<StatisticTableColumn> columns;
   final List<StatisticTableRow> rows;
 
@@ -30,18 +29,25 @@ class StatisticTable {
 
   factory StatisticTable.fromJson(Map<String, dynamic> json) {
     return StatisticTable(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      source: json['source'],
+      id: json['id'] == null
+          ? null
+          : int.tryParse(json['id'].toString()),
+
+      title: json['title']?.toString(),
+      description: json['description']?.toString(),
+      source: json['source']?.toString(),
+
       lastUpdated: json['last_updated'] != null
-          ? DateTime.tryParse(json['last_updated'])
+          ? DateTime.tryParse(json['last_updated'].toString())
           : null,
-      subjectName: json['subject_name'],
-      subsubjectName: json['subsubject_name'],
+
+      subjectName: json['subject_name']?.toString(),
+      subsubjectName: json['subsubject_name']?.toString(),
+
       columns: (json['columns'] as List? ?? [])
           .map((e) => StatisticTableColumn.fromJson(e))
           .toList(),
+
       rows: (json['rows'] as List? ?? [])
           .map((e) => StatisticTableRow.fromJson(e))
           .toList(),

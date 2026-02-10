@@ -18,6 +18,7 @@ class StatisticSubjectScreen extends StatefulWidget {
 class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
   late final Future<List<StatisticSubject>> _futureSubjects;
   late final Future<List<StatisticTable>> _futureTables;
+  final StatisticApiService _statisticApi = StatisticApiService();
 
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
@@ -28,8 +29,8 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
   @override
   void initState() {
     super.initState();
-    _futureSubjects = StatisticApiService.getSubjects();
-    _futureTables = StatisticApiService.getAllTables();
+    _futureSubjects = _statisticApi.getSubjects();
+    _futureTables = _statisticApi.getAllTables();
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -101,7 +102,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -140,7 +141,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
+                color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -163,7 +164,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -281,7 +282,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -326,7 +327,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -340,17 +341,17 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: _getSubjectColor(subject.name ?? ''),
+              color: _getSubjectColor(subject.name),
               shape: BoxShape.circle,
             ),
             child: Icon(
-              _getSubjectIcon(subject.name ?? ''),
+              _getSubjectIcon(subject.name),
               color: Colors.white,
               size: 24,
             ),
           ),
           title: Text(
-            subject.name ?? 'Tidak ada nama',
+            subject.name,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -374,7 +375,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
 
   Widget _buildSubsubjectList(int subjectId) {
     return FutureBuilder<List<StatisticSubsubject>>(
-      future: StatisticApiService.getSubsubjects(subjectId),
+      future: _statisticApi.getSubsubjects(subjectId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Padding(
@@ -431,7 +432,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
           MaterialPageRoute(
             builder: (_) => StatisticTableListScreen(
               subsubjectId: item.id!,
-              title: item.name ?? '',
+              title: item.name,
             ),
           ),
         );
@@ -450,7 +451,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
@@ -462,7 +463,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  item.name ?? 'Tidak ada nama',
+                  item.name,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
@@ -530,7 +531,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF34C759).withOpacity(0.1),
+              color: const Color(0xFF34C759).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -589,7 +590,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -603,7 +604,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -630,7 +631,9 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF34C759).withOpacity(0.1),
+                                color: const Color(
+                                  0xFF34C759,
+                                ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -651,7 +654,9 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFF9500).withOpacity(0.1),
+                                color: const Color(
+                                  0xFFFF9500,
+                                ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -774,7 +779,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
             fontSize: 16,
             fontWeight: FontWeight.w700,
             color: Color(0xFF007AFF),
-            backgroundColor: Color(0xFF007AFF).withOpacity(0.1),
+            backgroundColor: Color(0xFF007AFF).withValues(alpha: 0.1),
           ),
         ),
       );
@@ -830,7 +835,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFFFF3B30).withOpacity(0.1),
+              color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -887,7 +892,7 @@ class _StatisticSubjectScreenState extends State<StatisticSubjectScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(

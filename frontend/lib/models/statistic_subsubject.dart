@@ -1,18 +1,26 @@
 class StatisticSubsubject {
   final int? id;
   final int? subjectId;
-  final String? name;
+  final String name;
   final String? description;
 
-  StatisticSubsubject({this.id, this.subjectId, this.name, this.description});
+  StatisticSubsubject({
+    this.id,
+    this.subjectId,
+    required this.name,
+    this.description,
+  });
 
   factory StatisticSubsubject.fromJson(Map<String, dynamic> json) {
-  return StatisticSubsubject(
-    id: json['id'] ?? json['subsubject_id'],
-    subjectId: json['subject_id'],
-    name: json['name'] as String?,
-    description: json['description'] as String?,
-  );
-}
+    final rawId = json['id'] ?? json['subsubject_id'];
+    final rawSubjectId = json['subject_id'] ?? json['subjectId'];
 
+    return StatisticSubsubject(
+      id: rawId == null ? null : int.tryParse(rawId.toString()),
+      subjectId:
+          rawSubjectId == null ? null : int.tryParse(rawSubjectId.toString()),
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString(),
+    );
+  }
 }

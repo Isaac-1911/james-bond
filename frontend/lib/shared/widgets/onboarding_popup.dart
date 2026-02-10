@@ -30,7 +30,7 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
           borderRadius: BorderRadius.circular(32),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: Colors.black.withValues(alpha: 0.15),
               blurRadius: 40,
               spreadRadius: 0,
             ),
@@ -53,7 +53,7 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
+                              color: Colors.black.withValues(alpha: 0.08),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
@@ -61,7 +61,7 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(20),
-                          child: Image.asset(
+                          child: Image.network(
                             widget.images[index],
                             fit: BoxFit.cover,
                             width: double.infinity,
@@ -145,7 +145,7 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                                     BoxShadow(
                                       color: const Color(
                                         0xFF007AFF,
-                                      ).withOpacity(0.3),
+                                      ).withValues(alpha: 0.3),
                                       blurRadius: 8,
                                       offset: const Offset(0, 2),
                                     ),
@@ -181,7 +181,7 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                                       BoxShadow(
                                         color: const Color(
                                           0xFF007AFF,
-                                        ).withOpacity(0.3),
+                                        ).withValues(alpha: 0.3),
                                         blurRadius: 8,
                                         offset: const Offset(0, 4),
                                       ),
@@ -220,7 +220,7 @@ class _OnboardingPopupState extends State<OnboardingPopup> {
                                       BoxShadow(
                                         color: const Color(
                                           0xFF007AFF,
-                                        ).withOpacity(0.3),
+                                        ).withValues(alpha: 0.3),
                                         blurRadius: 8,
                                         offset: const Offset(0, 4),
                                       ),

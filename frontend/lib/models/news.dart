@@ -10,17 +10,16 @@ class News {
     required this.title,
     this.summary,
     this.imageUrl,
-    this.releaseDate
+    this.releaseDate,
   });
 
-  factory News.fromJson(Map<String, dynamic> json){
+  factory News.fromJson(Map<String, dynamic> json) {
     return News(
-      id: json['news_id'],
-      title: json['title'],
-      summary: json['summary'],
-      imageUrl: json['image_url'],
-      releaseDate: json['release_date']
+      id: int.tryParse(json['news_id']?.toString() ?? '') ?? 0,
+      title: json['title']?.toString() ?? '',
+      summary: json['summary']?.toString(),
+      imageUrl: json['image_url']?.toString(),
+      releaseDate: json['release_date']?.toString(),
     );
   }
-
 }

@@ -1,56 +1,129 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
+import 'package:flutter/foundation.dart';
+
 import '../config/api_config.dart';
 import '../../models/statistic_subject.dart';
 import '../../models/statistic_subsubject.dart';
 import '../../models/statistic_table.dart';
 
 class StatisticApiService {
-  static final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: ApiConfig.baseUrl,
-      headers: {'Accept': 'application/json'},
-    ),
-  );
+  final Dio _dio;
 
-  // 🔹 GET /statistic/subjects
-  static Future<List<StatisticSubject>> getSubjects() async {
-    final res = await _dio.get('/statistic/subjects');
-
-    final List data = res.data['data'];
-    return data.map((e) => StatisticSubject.fromJson(e)).toList();
+  StatisticApiService() : _dio = _createDio() {
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          if (kDebugMode) {
+            debugPrint('➡️ [REQ] ${options.method} ${options.uri}');
+          }
+          handler.next(options);
+        },
+        onResponse: (response, handler) {
+          if (kDebugMode) {
+            debugPrint(
+              '✅ [RES] ${response.statusCode} ${response.requestOptions.uri}',
+            );
+          }
+          handler.next(response);
+        },
+        onError: (DioException e, handler) {
+          if (kDebugMode) {
+            debugPrint('❌ [ERR] ${e.type} ${e.message}');
+          }
+          handler.next(e);
+        },
+      ),
+    );
   }
 
-  // 🔹 GET /statistic/subsubjects/{subject_id}
-  static Future<List<StatisticSubsubject>> getSubsubjects(int subjectId) async {
-    final res = await _dio.get('/statistic/subsubjects/$subjectId');
+  // =============================
+  // 🔐 DIO FACTORY (TLS SAFE)
+  // =============================
+  static Dio _createDio() {
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: ApiConfig.baseUrl,
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
+        sendTimeout: const Duration(seconds: 15),
+        headers: {'Accept': 'application/json'},
+      ),
+    );
 
-    final List data = res.data['data'];
-    return data.map((e) => StatisticSubsubject.fromJson(e)).toList();
+    (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+      final client = HttpClient();
+      // ❗ jangan true — aman buat Play Store
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => false;
+      return client;
+    };
+
+    return dio;
   }
 
-  // 🔹 GET /statistic/tables/{subsubject_id}
-  static Future<List<StatisticTable>> getTables(int subsubjectId) async {
-    final res = await _dio.get('/statistic/tables/$subsubjectId');
-
-    final List data = res.data['data'];
-    return data.map((e) => StatisticTable.fromJson(e)).toList();
+  // =============================
+  // 📚 SUBJECT
+  // =============================
+  Future<List<StatisticSubject>> getSubjects() async {
+    try {
+      final res = await _dio.get('/statistic/subjects');
+      final List list = res.data['data'] as List? ?? [];
+      return list.map((e) => StatisticSubject.fromJson(e)).toList();
+    } on DioException {
+      throw Exception('Gagal memuat subject statistik');
+    }
   }
 
-  // 🔹 GET /statistic/table/{table_id}
-  static Future<StatisticTable> getTableDetail(int tableId) async {
-    final res = await _dio.get('/statistic/table/$tableId');
-
-    return StatisticTable.fromJson(res.data['data']);
+  // =============================
+  // 📂 SUBSUBJECT
+  // =============================
+  Future<List<StatisticSubsubject>> getSubsubjects(int subjectId) async {
+    try {
+      final res = await _dio.get('/statistic/subsubjects/$subjectId');
+      final List list = res.data['data'] as List? ?? [];
+      return list.map((e) => StatisticSubsubject.fromJson(e)).toList();
+    } on DioException {
+      throw Exception('Gagal memuat subsubject statistik');
+    }
   }
 
-  static Future<List<StatisticTable>> getAllTables() async {
+  // =============================
+  // 📊 TABLES BY SUBSUBJECT
+  // =============================
+  Future<List<StatisticTable>> getTables(int subsubjectId) async {
+    try {
+      final res = await _dio.get('/statistic/tables/$subsubjectId');
+      final List list = res.data['data'] as List? ?? [];
+      return list.map((e) => StatisticTable.fromJson(e)).toList();
+    } on DioException {
+      throw Exception('Gagal memuat tabel statistik');
+    }
+  }
 
+  // =============================
+  // 📄 TABLE DETAIL
+  // =============================
+  Future<StatisticTable> getTableDetail(int tableId) async {
+    try {
+      final res = await _dio.get('/statistic/table/$tableId');
+      return StatisticTable.fromJson(res.data['data']);
+    } on DioException {
+      throw Exception('Gagal memuat detail tabel statistik');
+    }
+  }
 
-    final res = await _dio.get('/statistic/tables');
-
-
-    final List data = res.data['data'];
-
-    return data.map((e) => StatisticTable.fromJson(e)).toList();
+  // =============================
+  // 🔍 ALL TABLES (GLOBAL SEARCH)
+  // =============================
+  Future<List<StatisticTable>> getAllTables() async {
+    try {
+      final res = await _dio.get('/statistic/tables');
+      final List list = res.data['data'] as List? ?? [];
+      return list.map((e) => StatisticTable.fromJson(e)).toList();
+    } on DioException {
+      throw Exception('Gagal memuat seluruh tabel statistik');
+    }
   }
 }

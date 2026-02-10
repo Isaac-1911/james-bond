@@ -65,7 +65,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -104,7 +104,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
+                color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -128,7 +128,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: Colors.black.withValues(alpha: 0.15),
               blurRadius: 24,
               offset: const Offset(0, 12),
             ),
@@ -154,7 +154,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                     ),
                   ),
                   errorWidget: (context, url, error) => Container(
-                    color: const Color(0xFF007AFF).withOpacity(0.1),
+                    color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                     width: double.infinity,
                     height: double.infinity,
                     child: const Center(
@@ -181,7 +181,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                   ),
                 )
               : Container(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                   width: double.infinity,
                   height: double.infinity,
                   child: const Center(
@@ -244,7 +244,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                 child: _buildInfoCard(
                   icon: Icons.inventory_2_rounded,
                   title: 'Katalog',
-                  value: widget.publication.catalogNumber?.toString() ?? '-',
+                  value: widget.publication.catalogNumber,
                   color: const Color(0xFF007AFF),
                 ),
               ),
@@ -253,7 +253,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                 child: _buildInfoCard(
                   icon: Icons.menu_book_rounded,
                   title: 'Publikasi',
-                  value: widget.publication.publicationNumber ?? '-',
+                  value: widget.publication.publicationNumber,
                   color: const Color(0xFF34C759),
                 ),
               ),
@@ -266,7 +266,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                 child: _buildInfoCard(
                   icon: Icons.qr_code_2_rounded,
                   title: 'ISSN / ISBN',
-                  value: widget.publication.isbn ?? '-',
+                  value: widget.publication.isbn,
                   color: const Color(0xFFFF9500),
                 ),
               ),
@@ -299,7 +299,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -311,7 +311,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 22),
@@ -369,7 +369,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -412,7 +412,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: _isSharing
@@ -480,7 +480,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
     try {
       await DownloadHelper.downloadPublicationPdf(
         context: context,
-        publicationId: widget.publication.id,
+        publicationId: widget.publication.publicationId,
         fileName: _fileName,
       );
     } finally {

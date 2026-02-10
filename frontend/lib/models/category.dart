@@ -3,13 +3,17 @@ class Category {
   final String? name;
   final String? description;
 
-  Category({required this.id, this.name, this.description});
+  Category({
+    required this.id,
+    this.name,
+    this.description,
+  });
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      id: json['category_id'],
-      name: json['name'],
-      description: json['description']
+      id: int.tryParse(json['category_id']?.toString() ?? '') ?? 0,
+      name: json['name']?.toString(),
+      description: json['description']?.toString(),
     );
   }
 }

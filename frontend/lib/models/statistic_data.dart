@@ -19,17 +19,15 @@ class StatisticData {
 
   factory StatisticData.fromJson(Map<String, dynamic> json) {
     return StatisticData(
-      id: json['statistic_id'] == null
-    ? 0
-    : json['statistic_id'] as int,
-      categoryId: json['category_id'] as int?,
-      title: json['title'] as String?,
-      description: json['description'] as String?,
-      value: json['value'] == null
-          ? null
-          : (json['value'] as num).toDouble(),
-      unit: json['unit'] as String?,
-      period: json['period'] as String?,
+      id: int.tryParse(json['statistic_id']?.toString() ?? '') ?? 0,
+      categoryId: int.tryParse(json['category_id']?.toString() ?? ''),
+      title: json['title']?.toString(),
+      description: json['description']?.toString(),
+      value: json['value'] != null
+          ? double.tryParse(json['value'].toString())
+          : null,
+      unit: json['unit']?.toString(),
+      period: json['period']?.toString(),
     );
   }
 }

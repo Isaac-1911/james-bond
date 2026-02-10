@@ -22,7 +22,9 @@ class DownloadHelper {
           throw Exception('Tidak bisa akses storage Android');
         }
         downloadDir = Directory('${dir.path}/Download');
-      } else if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+      } else if (Platform.isLinux ||
+          Platform.isMacOS ||
+          Platform.isWindows) {
         final dir = await getDownloadsDirectory();
         if (dir == null) {
           throw Exception('Tidak bisa akses folder Downloads');
@@ -54,6 +56,9 @@ class DownloadHelper {
         },
       );
 
+      // ✅ GUARD WAJIB
+      if (!context.mounted) return;
+
       // ================== SUCCESS ==================
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -76,6 +81,10 @@ class DownloadHelper {
       );
     } catch (e) {
       debugPrint('DOWNLOAD ERROR: $e');
+
+      // ✅ GUARD WAJIB
+      if (!context.mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: const Color(0xFFFF3B30),
@@ -111,7 +120,9 @@ class DownloadHelper {
           throw Exception('Tidak bisa akses storage Android');
         }
         downloadDir = Directory('${dir.path}/Download');
-      } else if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+      } else if (Platform.isLinux ||
+          Platform.isMacOS ||
+          Platform.isWindows) {
         final dir = await getDownloadsDirectory();
         if (dir == null) {
           throw Exception('Tidak bisa akses folder Downloads');

@@ -59,7 +59,8 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 
+0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -98,7 +99,8 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
+                color: const Color(0xFF007AFF).withValues(alpha: 
+0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -122,7 +124,8 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: Colors.black.withValues(alpha: 
+0.15),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -161,7 +164,8 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
                   ),
                 )
               : Container(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 
+0.1),
                   width: double.infinity,
                   height: double.infinity,
                   child: const Center(
@@ -213,7 +217,8 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 
+0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -269,7 +274,8 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 
+0.06),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -312,7 +318,8 @@ class _ActivityNewsDetailScreenState extends State<ActivityNewsDetailScreen> {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 
+0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: _isSharing

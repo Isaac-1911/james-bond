@@ -14,7 +14,7 @@ class ReleasePlanScreen extends StatefulWidget {
 }
 
 class _ReleasePlanScreenState extends State<ReleasePlanScreen> {
-  String _selectedType = 'publikasi';
+  ReleaseType _selectedType = ReleaseType.publikasi;
   int _selectedMonth = DateTime.now().month;
   late Future<List<ReleasePlan>> _futureReleasePlans;
   final ValueNotifier<List<ReleasePlan>> _filteredPlans =
@@ -51,16 +51,14 @@ class _ReleasePlanScreenState extends State<ReleasePlanScreen> {
     });
   }
 
-  void _onTypeChanged(String type) {
+  void _onTypeChanged(ReleaseType type) {
     if (_selectedType == type) return;
 
     setState(() {
       _selectedType = type;
     });
 
-    _futureReleasePlans.then((plans) {
-      _applyFilters(plans);
-    });
+    _futureReleasePlans.then(_applyFilters);
   }
 
   void _onMonthChanged(int month) {
@@ -117,7 +115,7 @@ class _ReleasePlanScreenState extends State<ReleasePlanScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -156,7 +154,7 @@ class _ReleasePlanScreenState extends State<ReleasePlanScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
+                color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -190,7 +188,7 @@ class _ReleasePlanScreenState extends State<ReleasePlanScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -283,7 +281,7 @@ class _ReleasePlanScreenState extends State<ReleasePlanScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFFFF3B30).withOpacity(0.1),
+              color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -342,7 +340,7 @@ class _ReleasePlanScreenState extends State<ReleasePlanScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -438,7 +436,7 @@ class _ReleasePlanScreenState extends State<ReleasePlanScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -476,7 +474,7 @@ class _ReleasePlanScreenState extends State<ReleasePlanScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF34C759).withOpacity(0.1),
+              color: const Color(0xFF34C759).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -31,9 +32,7 @@ class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
           children: [
             _buildAppBar(),
             const SizedBox(height: 20),
-            Expanded(
-              child: _buildContent(),
-            ),
+            Expanded(child: _buildContent()),
           ],
         ),
       ),
@@ -46,7 +45,7 @@ class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -85,7 +84,7 @@ class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
+                color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -135,10 +134,7 @@ class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
           const SizedBox(height: 20),
           Text(
             'Memuat berita kegiatan...',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
         ],
       ),
@@ -154,7 +150,7 @@ class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFFFF3B30).withOpacity(0.1),
+              color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -176,10 +172,7 @@ class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
           Text(
             'Coba lagi nanti atau periksa koneksi internet',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
           const SizedBox(height: 24),
           SizedBox(
@@ -198,10 +191,7 @@ class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
               ),
               child: const Text(
                 'Coba Lagi',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -219,7 +209,7 @@ class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -240,10 +230,7 @@ class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
           const SizedBox(height: 8),
           Text(
             'Berita kegiatan akan segera tersedia',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
         ],
       ),
@@ -259,7 +246,7 @@ class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -305,10 +292,7 @@ class _ActivityNewsScreenState extends State<ActivityNewsScreen> {
 class ActivityNewsCard extends StatefulWidget {
   final ActivityNews activityNews;
 
-  const ActivityNewsCard({
-    super.key,
-    required this.activityNews,
-  });
+  const ActivityNewsCard({super.key, required this.activityNews});
 
   @override
   State<ActivityNewsCard> createState() => _ActivityNewsCardState();
@@ -329,7 +313,7 @@ class _ActivityNewsCardState extends State<ActivityNewsCard> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -386,7 +370,7 @@ class _ActivityNewsCardState extends State<ActivityNewsCard> {
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -473,12 +457,9 @@ class _ActivityNewsCardState extends State<ActivityNewsCard> {
       child: Container(
         height: 48,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: color.withOpacity(0.3),
-            width: 1.5,
-          ),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
         ),
         child: Center(
           child: isLoading
@@ -529,9 +510,7 @@ class _ActivityNewsCardState extends State<ActivityNewsCard> {
         SnackBar(
           backgroundColor: const Color(0xFF34C759),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           content: const Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white, size: 20),
@@ -551,9 +530,7 @@ class _ActivityNewsCardState extends State<ActivityNewsCard> {
         SnackBar(
           backgroundColor: const Color(0xFFFF3B30),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           content: const Row(
             children: [
               Icon(Icons.error_outline, color: Colors.white, size: 20),
@@ -583,17 +560,13 @@ class _ActivityNewsCardState extends State<ActivityNewsCard> {
     });
 
     try {
-      final file = await DownloadHelper.downloadImage(
-        imageUrl: widget.activityNews.imageUrl ?? '',
+      final File file = await DownloadHelper.downloadImage(
+        imageUrl: widget.activityNews.imageUrl!,
         fileName: _fileName,
       );
-
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: widget.activityNews.title,
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], text: widget.activityNews.title),
       );
-
-      
     } catch (_) {
       if (!mounted) return;
 
@@ -601,9 +574,7 @@ class _ActivityNewsCardState extends State<ActivityNewsCard> {
         SnackBar(
           backgroundColor: const Color(0xFFFF3B30),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           content: const Row(
             children: [
               Icon(Icons.error_outline, color: Colors.white, size: 20),

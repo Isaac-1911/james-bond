@@ -4,6 +4,7 @@ import 'package:frontend/features/activity_news/activity_news_screen.dart';
 import 'package:frontend/features/news/news_list_screen.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:frontend/core/services/api_service.dart';
 import '../home/home_screen.dart';
 import '../statistic/screens/statistic_subject_screen.dart';
 import '../publication/publication_list_screen.dart';
@@ -23,7 +24,8 @@ class _MainNavigationState extends State<MainNavigation>
   int _currentIndex = 0;
   String _lainnyaPage = 'infografis';
 
-  // 🔑 FLAG SESSION (RESET SETIAP APP DIBUKA ULANG)
+  List<String> _onboardingImages = [];
+  // bool _loadingOnboarding = true;
   bool _hasShownPopupThisSession = false;
 
   void switchTab(int index) {
@@ -35,14 +37,9 @@ class _MainNavigationState extends State<MainNavigation>
   @override
   void initState() {
     super.initState();
-
-    // daftar observer lifecycle
     WidgetsBinding.instance.addObserver(this);
 
-    // tampilkan popup SEKALI di awal session
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showOnboardingIfNeeded();
-    });
+    _loadOnboarding();
   }
 
   @override
@@ -51,9 +48,9 @@ class _MainNavigationState extends State<MainNavigation>
     super.dispose();
   }
 
-  // 🔥 INTI LOGIC POPUP
   void _showOnboardingIfNeeded() {
     if (_hasShownPopupThisSession) return;
+    if (_onboardingImages.isEmpty) return;
 
     _hasShownPopupThisSession = true;
 
@@ -61,16 +58,32 @@ class _MainNavigationState extends State<MainNavigation>
       context: context,
       barrierDismissible: false,
       builder: (_) => OnboardingPopup(
-        images: const [
-          'assets/onboarding/slide1.png',
-          'assets/onboarding/slide2.png',
-          'assets/onboarding/slide3.png',
-        ],
+        images: _onboardingImages,
         onClose: () {
           Navigator.pop(context);
         },
       ),
     );
+  }
+
+  Future<void> _loadOnboarding() async {
+    try {
+      final banners = await ApiService().getOnboardingBanners();
+
+      if (!mounted) return;
+
+      setState(() {
+        _onboardingImages = banners.map((e) => e.imageUrl).toList();
+      });
+    } catch (e) {
+      debugPrint('ONBOARDING ERROR: $e');
+    } finally {
+      // _loadingOnboarding = false;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showOnboardingIfNeeded();
+      });
+    }
   }
 
   void openLainnya(String page) {
@@ -98,7 +111,7 @@ class _MainNavigationState extends State<MainNavigation>
       builder: (_) {
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.95),
+            color: Colors.white.withValues(alpha: 0.95),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             boxShadow: [
               BoxShadow(
@@ -218,11 +231,11 @@ class _MainNavigationState extends State<MainNavigation>
       backgroundColor: const Color(0xFFF2F2F7),
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: SafeArea(
-        top: false, // ⛔ jangan dorong ke atas
+        top: false,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -246,7 +259,9 @@ class _MainNavigationState extends State<MainNavigation>
               backgroundColor: Colors.transparent,
               color: Colors.grey.shade500,
               activeColor: const Color(0xFF007AFF),
-              tabBackgroundColor: const Color(0xFF007AFF).withOpacity(0.1),
+              tabBackgroundColor: const Color(
+                0xFF007AFF,
+              ).withValues(alpha: 0.1),
               gap: 4,
               padding: const EdgeInsets.all(12),
               tabs: const [

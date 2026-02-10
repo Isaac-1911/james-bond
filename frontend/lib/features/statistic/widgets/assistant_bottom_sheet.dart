@@ -28,7 +28,7 @@ class _AssistantBottomSheetState extends State<AssistantBottomSheet> {
   final FocusNode _focusNode = FocusNode();
 
   bool _isLoading = false;
-  bool _hasError = false;
+  // bool _hasError = false;
 
   @override
   void initState() {
@@ -135,7 +135,7 @@ class _AssistantBottomSheetState extends State<AssistantBottomSheet> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF007AFF).withOpacity(0.1),
+                      color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -271,10 +271,10 @@ class _AssistantBottomSheetState extends State<AssistantBottomSheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF007AFF).withOpacity(0.1),
+          color: const Color(0xFF007AFF).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: const Color(0xFF007AFF).withOpacity(0.3),
+            color: const Color(0xFF007AFF).withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -377,7 +377,7 @@ class _AssistantBottomSheetState extends State<AssistantBottomSheet> {
     setState(() {
       _messages.add(ChatMessage.user(message));
       _isLoading = true;
-      _hasError = false;
+      // _hasError = false;
       _controller.clear();
     });
 
@@ -404,7 +404,7 @@ class _AssistantBottomSheetState extends State<AssistantBottomSheet> {
       await _animateAiResponse(answer);
     } catch (e) {
       setState(() {
-        _hasError = true;
+        // _hasError = true;
         _messages.add(
           ChatMessage.ai(
             'Maaf, terjadi gangguan saat memproses pertanyaan. '
@@ -442,7 +442,7 @@ class ChatCard extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
+                color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(

@@ -29,11 +29,11 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
   late final Future<StatisticTable> _futureTable;
   final ScrollController _horizontalScrollController = ScrollController();
   final ScrollController _verticalScrollController = ScrollController();
-
+  final StatisticApiService _statisticApi = StatisticApiService();
   @override
   void initState() {
     super.initState();
-    _futureTable = StatisticApiService.getTableDetail(widget.tableId);
+    _futureTable = _statisticApi.getTableDetail(widget.tableId);
   }
 
   @override
@@ -48,7 +48,8 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => AssistantBottomSheet(tableId: tableId, tableTitle: widget.title),
+      builder: (_) =>
+          AssistantBottomSheet(tableId: tableId, tableTitle: widget.title),
     );
   }
 
@@ -95,7 +96,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -139,7 +140,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -183,7 +184,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFFFF3B30).withOpacity(0.1),
+              color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -240,7 +241,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -283,7 +284,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -318,7 +319,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF007AFF).withOpacity(0.1),
+                        color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -336,7 +337,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF34C759).withOpacity(0.1),
+                        color: const Color(0xFF34C759).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -355,7 +356,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFF9500).withOpacity(0.1),
+                          color: const Color(0xFFFF9500).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -395,13 +396,13 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        const Color(0xFF007AFF).withOpacity(0.05),
-                        const Color(0xFF34C759).withOpacity(0.05),
+                        const Color(0xFF007AFF).withValues(alpha: 0.05),
+                        const Color(0xFF34C759).withValues(alpha: 0.05),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: const Color(0xFF007AFF).withOpacity(0.2),
+                      color: const Color(0xFF007AFF).withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),
@@ -411,7 +412,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF007AFF).withOpacity(0.1),
+                          color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -555,7 +556,10 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           border: Border(
-            right: BorderSide(color: Colors.white.withOpacity(0.3), width: 1),
+            right: BorderSide(
+              color: Colors.white.withValues(alpha: 0.3),
+              width: 1,
+            ),
           ),
         ),
         child: Column(
@@ -579,7 +583,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                   fontSize: 10,
                 ),
               ),
@@ -745,7 +749,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                                 decoration: BoxDecoration(
                                   color: const Color(
                                     0xFF007AFF,
-                                  ).withOpacity(0.1),
+                                  ).withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -796,7 +800,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                                 width: 48,
                                 height: 48,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: Colors.white.withValues(alpha: 0.2),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -820,7 +824,7 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                 ),
                               ),
                             ],
@@ -886,13 +890,14 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
           backgroundColor: const Color(0xFF34C759),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          content: const Row(
+          content: Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white, size: 20),
               SizedBox(width: 8),
               Text(
                 'CSV berhasil disimpan',
                 style: TextStyle(color: Colors.white),
+                maxLines: 2,
               ),
             ],
           ),

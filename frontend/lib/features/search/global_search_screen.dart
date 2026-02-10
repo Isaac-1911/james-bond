@@ -25,7 +25,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   Timer? _debounceTimer;
 
   bool _loading = false;
-  final List<GlobalSearchItem> _results = [];
+  // final List<GlobalSearchItem> _results = [];
 
   @override
   void initState() {
@@ -134,7 +134,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -173,7 +173,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
+                color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -196,7 +196,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -305,7 +305,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -362,7 +362,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -419,7 +419,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -466,7 +466,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -480,7 +480,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: _getTypeColor(item.type).withOpacity(0.1),
+                  color: _getTypeColor(item.type).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -523,7 +523,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: _getTypeColor(item.type).withOpacity(0.1),
+                        color: _getTypeColor(item.type).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -569,7 +569,6 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         return const Color(0xFFFF9500);
       case SearchItemType.infographic:
         return const Color(0xFFAF52DE);
-
     }
   }
 
@@ -583,7 +582,6 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         return Icons.table_chart_rounded;
       case SearchItemType.infographic:
         return Icons.image_rounded;
-
     }
   }
 

@@ -31,7 +31,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
   int _page = 1;
   final int _limit = 12;
   String _query = '';
-  String? _sort;
+  // String? _sort;
 
   @override
   void initState() {
@@ -146,7 +146,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
 
     setState(() {
       _segmentIndex = index;
-      _sort = index == 1 ? 'popular' : null;
+      // _sort = index == 1 ? 'popular' : null;
     });
 
     _resetAndFetch();
@@ -178,7 +178,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -217,7 +217,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
+                color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -242,7 +242,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 16,
                   offset: const Offset(0, 6),
                 ),
@@ -447,7 +447,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
                                 decoration: BoxDecoration(
                                   color: const Color(
                                     0xFF007AFF,
-                                  ).withOpacity(0.1),
+                                  ).withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -690,7 +690,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
                     margin: const EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                       color: _selectedYear == null
-                          ? const Color(0xFF007AFF).withOpacity(0.1)
+                          ? const Color(0xFF007AFF).withValues(alpha: 0.1)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
@@ -778,7 +778,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
                         },
                         child: Container(
                           color: isSelected
-                              ? const Color(0xFF007AFF).withOpacity(0.05)
+                              ? const Color(0xFF007AFF).withValues(alpha: 0.05)
                               : Colors.transparent,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,
@@ -834,7 +834,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
                                   decoration: BoxDecoration(
                                     color: const Color(
                                       0xFF007AFF,
-                                    ).withOpacity(0.1),
+                                    ).withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   child: Text(
@@ -925,7 +925,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF007AFF).withOpacity(0.3),
+                      color: const Color(0xFF007AFF).withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -1001,7 +1001,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -1061,7 +1061,7 @@ class _PublicationListScreenState extends State<PublicationListScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(

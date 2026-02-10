@@ -1,7 +1,7 @@
+import 'dart:io';
+import 'package:dio/io.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import '../config/api_config.dart';
-
 import 'package:frontend/models/activity_news.dart';
 import 'package:frontend/models/category.dart' as model;
 import 'package:frontend/models/news.dart';
@@ -10,19 +10,46 @@ import 'package:frontend/models/infographic.dart';
 import 'package:frontend/models/statistic_data.dart';
 import 'package:frontend/models/release_plan.dart';
 import 'package:frontend/models/global_search_item.dart';
+import 'package:frontend/models/onboarding_banner.dart';
+import '../config/api_config.dart';
 
 class ApiService {
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: ApiConfig.baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-      sendTimeout: const Duration(seconds: 10),
-      headers: {'Accept': 'application/json'},
-    ),
-  );
+  late final Dio _dio;
+  Map<String, dynamic> _safeMap(dynamic v) {
+    if (v is Map<String, dynamic>) return v;
+    return <String, dynamic>{};
+  }
+
+  List _safeList(dynamic v) {
+    if (v is List) return v;
+    return <dynamic>[];
+  }
+
+  static Dio _createDio() {
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: ApiConfig.baseUrl,
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
+        sendTimeout: const Duration(seconds: 15),
+        headers: {'Accept': 'application/json'},
+      ),
+    );
+
+    (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+      final client = HttpClient();
+      // ❗ jangan return true → tetap aman buat Play Store
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => false;
+      return client;
+    };
+
+    return dio;
+  }
 
   ApiService() {
+    _dio = _createDio();
+
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
@@ -73,31 +100,37 @@ class ApiService {
   // 📰 NEWS
   // =============================
   Future<List<News>> getNews({String? query}) async {
-    try {
-      final res = await _dio.get('/news');
-      final List data = res.data['data'];
+  try {
+    final res = await _dio.get('/news');
 
-      List<News> items = data.map((e) => News.fromJson(e)).toList();
+    final root = _safeMap(res.data);
+    final list = _safeList(root['data']);
 
-      if (query != null && query.isNotEmpty) {
-        final q = query.toLowerCase();
-        items = items.where((n) => n.title.toLowerCase().contains(q)).toList();
-      }
+    List<News> items =
+        list.map((e) => News.fromJson(_safeMap(e))).toList();
 
-      return items;
-    } on DioException catch (e) {
-      throw Exception(_mapDioError(e));
+    if (query != null && query.isNotEmpty) {
+      final q = query.toLowerCase();
+      items = items.where((n) => n.title.toLowerCase().contains(q)).toList();
     }
-  }
 
-  Future<News> getNewsById(int id) async {
-    try {
-      final res = await _dio.get('/news/$id');
-      return News.fromJson(res.data['data']);
-    } on DioException catch (e) {
-      throw Exception(_mapDioError(e));
-    }
+    return items;
+  } on DioException catch (e) {
+    throw Exception(_mapDioError(e));
   }
+}
+
+Future<News> getNewsById(int id) async {
+  try {
+    final res = await _dio.get('/news/$id');
+
+    final data = _safeMap(_safeMap(res.data)['data']);
+    return News.fromJson(data);
+  } on DioException catch (e) {
+    throw Exception(_mapDioError(e));
+  }
+}
+
 
   // =============================
   // 📊 INFOGRAFIK
@@ -105,24 +138,29 @@ class ApiService {
   static Future<List<Infographic>>? _infographicCache;
 
   Future<List<Infographic>> getInfographic() async {
-    return getInfographicCached();
-  }
+  return getInfographicCached();
+}
 
-  Future<List<Infographic>> getInfographicCached() {
-    _infographicCache ??= _fetchInfographic();
-    return _infographicCache!;
-  }
+Future<List<Infographic>> getInfographicCached() {
+  _infographicCache ??= _fetchInfographic();
+  return _infographicCache!;
+}
 
-  Future<List<Infographic>> _fetchInfographic() async {
-    try {
-      final res = await _dio.get('/infographic');
-      return (res.data['data'] as List)
-          .map((e) => Infographic.fromJson(e))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception(_mapDioError(e));
-    }
+Future<List<Infographic>> _fetchInfographic() async {
+  try {
+    final res = await _dio.get('/infographic');
+
+    final root = _safeMap(res.data);
+    final list = _safeList(root['data']);
+
+    return list
+        .map((e) => Infographic.fromJson(_safeMap(e)))
+        .toList();
+  } on DioException catch (e) {
+    throw Exception(_mapDioError(e));
   }
+}
+
 
   // =============================
   // 🧾 ACTIVITY NEWS
@@ -130,27 +168,40 @@ class ApiService {
   static Future<List<ActivityNews>>? _activityNewsCache;
 
   Future<List<ActivityNews>> getActivityNewsCached() {
-    _activityNewsCache ??= _fetchActivityNews();
-    return _activityNewsCache!;
-  }
+  _activityNewsCache ??= _fetchActivityNews();
+  return _activityNewsCache!;
+}
 
-  Future<List<ActivityNews>> getActivityNews() async {
+Future<List<ActivityNews>> getActivityNews() async {
+  try {
     final res = await _dio.get('/activity-news');
-    return (res.data['data'] as List)
-        .map((json) => ActivityNews.fromJson(json))
-        .toList();
-  }
 
-  Future<List<ActivityNews>> _fetchActivityNews() async {
-    try {
-      final res = await _dio.get('/activity-news');
-      return (res.data['data'] as List)
-          .map((e) => ActivityNews.fromJson(e))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception(_mapDioError(e));
-    }
+    final root = _safeMap(res.data);
+    final list = _safeList(root['data']);
+
+    return list
+        .map((e) => ActivityNews.fromJson(_safeMap(e)))
+        .toList();
+  } on DioException catch (e) {
+    throw Exception(_mapDioError(e));
   }
+}
+
+Future<List<ActivityNews>> _fetchActivityNews() async {
+  try {
+    final res = await _dio.get('/activity-news');
+
+    final root = _safeMap(res.data);
+    final list = _safeList(root['data']);
+
+    return list
+        .map((e) => ActivityNews.fromJson(_safeMap(e)))
+        .toList();
+  } on DioException catch (e) {
+    throw Exception(_mapDioError(e));
+  }
+}
+
 
   // =============================
   // 📚 PUBLICATION
@@ -159,7 +210,7 @@ class ApiService {
     int page = 1,
     int limit = 10,
     String? sort,
-    int? category, // 🔥 BALIKIN
+    int? category,
     String? filter,
     String? query,
     int? year,
@@ -170,24 +221,29 @@ class ApiService {
         queryParameters: {
           'page': page,
           'limit': limit,
-          if (query != null && query.isNotEmpty) 'q': query,
+          if (query?.isNotEmpty == true) 'q': query,
           if (sort != null) 'sort': sort,
           if (filter != null) 'filter': filter,
-          if (category != null) 'category': category, // 🔥 PAKAI
+          if (category != null) 'category': category,
           if (year != null) 'year': year,
         },
       );
 
-      final pagination = res.data['data'];
+      
 
-      final items = (pagination['data'] as List)
-          .map((e) => Publication.fromJson(e))
-          .toList();
+      final data = _safeMap(res.data)['data'];
+      final pagination = _safeMap(data);
+
+      final list = _safeList(
+        pagination['data'],
+      ).map((e) => Publication.fromJson(e)).toList();
 
       return {
-        'items': items,
-        'currentPage': pagination['current_page'],
-        'lastPage': pagination['last_page'],
+        'items': list,
+        'currentPage':
+            int.tryParse(pagination['current_page']?.toString() ?? '') ?? 1,
+        'lastPage':
+            int.tryParse(pagination['last_page']?.toString() ?? '') ?? 1,
       };
     } on DioException catch (e) {
       throw Exception(_mapDioError(e));
@@ -207,121 +263,161 @@ class ApiService {
   // 📈 STATISTIC
   // =============================
   Future<List<StatisticData>> getStatistic() async {
-    try {
-      final res = await _dio.get('/statistics');
-      return (res.data['data'] as List)
-          .map((e) => StatisticData.fromJson(e))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception(_mapDioError(e));
-    }
+  try {
+    final res = await _dio.get('/statistics');
+
+    final root = _safeMap(res.data);
+    final list = _safeList(root['data']);
+
+    return list
+        .map((e) => StatisticData.fromJson(_safeMap(e)))
+        .toList();
+  } on DioException catch (e) {
+    throw Exception(_mapDioError(e));
   }
+}
+
 
   // =============================
   // 🗂 CATEGORY
   // =============================
   Future<List<model.Category>> getCategories() async {
-    try {
-      final res = await _dio.get('/category');
-      return (res.data['data'] as List)
-          .map((e) => model.Category.fromJson(e))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception(_mapDioError(e));
-    }
+  try {
+    final res = await _dio.get('/category');
+
+    final root = _safeMap(res.data);
+    final list = _safeList(root['data']);
+
+    return list
+        .map((e) => model.Category.fromJson(_safeMap(e)))
+        .toList();
+  } on DioException catch (e) {
+    throw Exception(_mapDioError(e));
   }
+}
+
 
   // =============================
   // 📅 RELEASE PLAN
   // =============================
   Future<List<ReleasePlan>> getReleasePlans() async {
-    try {
-      final res = await _dio.get('/release-plans');
-      return (res.data['data'] as List)
-          .map((e) => ReleasePlan.fromJson(e))
-          .toList();
-    } on DioException catch (e) {
-      throw Exception(_mapDioError(e));
-    }
+  try {
+    final res = await _dio.get('/release-plans');
+
+    final root = _safeMap(res.data);
+    final list = _safeList(root['data']);
+
+    return list
+        .map((e) => ReleasePlan.fromJson(_safeMap(e)))
+        .toList();
+  } on DioException catch (e) {
+    throw Exception(_mapDioError(e));
   }
+}
+
 
   // =============================
   // 🔍 GLOBAL SEARCH
   // =============================
   Future<List<GlobalSearchItem>> globalSearch(String query) async {
-    try {
-      final res = await _dio.get('/search', queryParameters: {'q': query});
-      final data = res.data['data'];
+  try {
+    final res = await _dio.get('/search', queryParameters: {'q': query});
+    final root = _safeMap(res.data);
+    final data = _safeMap(root['data']);
 
-      final List<GlobalSearchItem> results = [];
+    final List<GlobalSearchItem> results = [];
 
-      for (final item in data['news'] ?? []) {
-        results.add(
-          GlobalSearchItem(
-            type: SearchItemType.news,
-            id: item['news_id'],
-            title: item['title'],
-            subtitle: item['release_date'],
-            tag: 'Berita Resmi Statistik',
-          ),
-        );
-      }
-
-      for (final item in data['publications'] ?? []) {
-        results.add(
-          GlobalSearchItem(
-            type: SearchItemType.publication,
-            id: item['publication_id'],
-            title: item['title'],
-            subtitle: item['release_date'],
-            tag: 'Publikasi',
-          ),
-        );
-      }
-
-      for (final item in data['statistics'] ?? []) {
-        results.add(
-          GlobalSearchItem(
-            type: SearchItemType.statistic,
-            id: item['id'],
-            title: item['title'],
-            subtitle: item['subsubject_name'] ?? item['subject_name'],
-            tag: 'Tabel Statistik',
-          ),
-        );
-      }
-
-      for (final item in data['infographics'] ?? []) {
-        results.add(
-          GlobalSearchItem(
-            type: SearchItemType.infographic,
-            id: item['infographic_id'],
-            title: item['title'],
-            subtitle: item['description'],
-            tag: 'Infografis',
-          ),
-        );
-      }
-
-      return results;
-    } on DioException catch (e) {
-      throw Exception(_mapDioError(e));
+    for (final item in _safeList(data['news'])) {
+      final m = _safeMap(item);
+      results.add(
+        GlobalSearchItem(
+          type: SearchItemType.news,
+          id: int.tryParse(m['news_id']?.toString() ?? '') ?? 0,
+          title: m['title']?.toString() ?? '',
+          subtitle: m['release_date']?.toString(),
+          tag: 'Berita Resmi Statistik',
+        ),
+      );
     }
+
+    for (final item in _safeList(data['publications'])) {
+      final m = _safeMap(item);
+      results.add(
+        GlobalSearchItem(
+          type: SearchItemType.publication,
+          id: int.tryParse(m['publication_id']?.toString() ?? '') ?? 0,
+          title: m['title']?.toString() ?? '',
+          subtitle: m['release_date']?.toString(),
+          tag: 'Publikasi',
+        ),
+      );
+    }
+
+    for (final item in _safeList(data['statistics'])) {
+      final m = _safeMap(item);
+      results.add(
+        GlobalSearchItem(
+          type: SearchItemType.statistic,
+          id: int.tryParse(m['id']?.toString() ?? '') ?? 0,
+          title: m['title']?.toString() ?? '',
+          subtitle: m['subsubject_name']?.toString() ??
+              m['subject_name']?.toString(),
+          tag: 'Tabel Statistik',
+        ),
+      );
+    }
+
+    for (final item in _safeList(data['infographics'])) {
+      final m = _safeMap(item);
+      results.add(
+        GlobalSearchItem(
+          type: SearchItemType.infographic,
+          id: int.tryParse(m['infographic_id']?.toString() ?? '') ?? 0,
+          title: m['title']?.toString() ?? '',
+          subtitle: m['description']?.toString(),
+          tag: 'Infografis',
+        ),
+      );
+    }
+
+    return results;
+  } on DioException catch (e) {
+    throw Exception(_mapDioError(e));
   }
+}
+
 
   Future<void> submitFeedback({
-    required int rating,
-    String? job,
-    List<String>? tags,
-    String? message,
-  }) async {
-    try {
-      await _dio.post(
-        '/feedback',
-        data: {'rating': rating, 'job': job, 'tags': tags, 'message': message},
-      );
-    } on DioException catch (e) {
-      throw Exception(_mapDioError(e));
-    }
+  required int rating,
+  String? job,
+  List<String>? tags,
+  String? message,
+}) async {
+  try {
+    await _dio.post(
+      '/feedback',
+      data: {
+        'rating': rating,
+        'job': job,
+        'tags': tags,
+        'message': message,
+      },
+    );
+  } on DioException catch (e) {
+    throw Exception(_mapDioError(e));
   }
+}
+
+
+  Future<List<OnboardingBanner>> getOnboardingBanners() async {
+  final res = await _dio.get('/onboarding-banners');
+
+  final root = _safeMap(res.data);
+  final list = _safeList(root['data']);
+
+  return list
+      .map((e) => OnboardingBanner.fromJson(_safeMap(e)))
+      .toList();
+}
+
 }

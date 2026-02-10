@@ -1,438 +1,189 @@
+ini lu perbaiki aja langsung
 
-class _FeedbackSheet extends StatefulWidget {
-  const _FeedbackSheet();
+ Future<List<News>> getNews({String? query}) async {
+    try {
+      final res = await _dio.get('/news');
+      final List data = res.data['data'];
 
-  @override
-  State<_FeedbackSheet> createState() => _FeedbackSheetState();
-}
+      List<News> items = data.map((e) => News.fromJson(e)).toList();
 
-class _FeedbackSheetState extends State<_FeedbackSheet> {
-  int _rating = 0;
-  String? _job;
-  final Set<String> _tags = {};
-  final TextEditingController _controller = TextEditingController();
+      if (query != null && query.isNotEmpty) {
+        final q = query.toLowerCase();
+        items = items.where((n) => n.title.toLowerCase().contains(q)).toList();
+      }
 
-  final List<String> _jobs = [
-    'Pelajar / Mahasiswa',
-    'ASN',
-    'Swasta',
-    'Wiraswasta',
-    'Lainnya',
-  ];
-
-  final List<String> _tagsList = [
-    'Tampilan',
-    'Pencarian Data',
-    'Kelengkapan Data',
-    'Metadata',
-    'Fitur',
-    'Performa Akses',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.85,
-      maxChildSize: 0.95,
-      minChildSize: 0.6,
-      builder: (_, controller) {
-        return Container(
-          padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 24,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 40,
-                spreadRadius: 0,
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: controller,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Kirim Feedback',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF1D1D1F),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.close,
-                                size: 20,
-                                color: Color(0xFF6E6E73),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Bantu kami meningkatkan layanan BPS',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Color(0xFF6E6E73),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Seberapa puas Anda dengan website BPS?',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF1D1D1F),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          if (constraints.maxWidth < 400) {
-                            return Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: List.generate(3, (index) {
-                                    return _buildRatingItem(index);
-                                  }),
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: List.generate(2, (index) {
-                                    return _buildRatingItem(index + 3);
-                                  }),
-                                ),
-                              ],
-                            );
-                          } else if (constraints.maxWidth < 350) {
-                            return Wrap(
-                              spacing: 12,
-                              runSpacing: 12,
-                              alignment: WrapAlignment.center,
-                              children: List.generate(5, (index) {
-                                return _buildRatingItem(index);
-                              }),
-                            );
-                          } else {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: List.generate(5, (index) {
-                                return _buildRatingItem(index);
-                              }),
-                            );
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 28),
-                      const Text(
-                        'Pekerjaan Terakhir',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF1D1D1F),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton2<String>(
-                            value: _job,
-                            items: _jobs
-                                .map((e) => DropdownMenuItem(
-                                      value: e,
-                                      child: Text(
-                                        e,
-                                        style: const TextStyle(fontSize: 15),
-                                      ),
-                                    ))
-                                .toList(),
-                            onChanged: (v) => setState(() => _job = v),
-                            buttonStyleData: const ButtonStyleData(
-                              height: 50,
-                              padding: EdgeInsets.only(left: 16, right: 8),
-                            ),
-                            menuItemStyleData: const MenuItemStyleData(
-                              height: 40,
-                            ),
-                            iconStyleData: const IconStyleData(
-                              icon: Icon(Icons.keyboard_arrow_down_rounded),
-                              iconSize: 24,
-                            ),
-                            dropdownStyleData: DropdownStyleData(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey.shade300),
-                              ),
-                            ),
-                            hint: const Padding(
-                              padding: EdgeInsets.only(left: 16),
-                              child: Text(
-                                'Pilih Pekerjaan',
-                                style: TextStyle(
-                                  color: Color(0xFF8E8E93),
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Apa yang dapat kami tingkatkan?',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF1D1D1F),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: _tagsList.map((tag) {
-                          final selected = _tags.contains(tag);
-                          return FilterChip(
-                            label: Text(
-                              tag,
-                              style: TextStyle(
-                                color: selected ? const Color(0xFF007AFF) : const Color(0xFF1D1D1F),
-                                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                              ),
-                            ),
-                            selected: selected,
-                            onSelected: (_) {
-                              setState(() {
-                                selected ? _tags.remove(tag) : _tags.add(tag);
-                              });
-                            },
-                            backgroundColor: Colors.white,
-                            selectedColor: const Color(0xFF007AFF).withOpacity(0.1),
-                            checkmarkColor: const Color(0xFF007AFF),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              side: BorderSide(
-                                color: selected
-                                    ? const Color(0xFF007AFF)
-                                    : Colors.grey.shade300,
-                                width: selected ? 1.5 : 1,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Saran dan Masukkan',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF1D1D1F),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: TextField(
-                          controller: _controller,
-                          maxLines: 5,
-                          style: const TextStyle(fontSize: 15),
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.all(16),
-                            hintText: 'Tuliskan saran Anda...',
-                            hintStyle: TextStyle(
-                              color: Color(0xFF8E8E93),
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _rating == 0
-                                ? const Color(0xFFC7C7CC)
-                                : const Color(0xFF007AFF),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: _rating == 0
-                              ? null
-                              : () async {
-                                  try {
-                                    await ApiService().submitFeedback(
-                                      rating: _rating,
-                                      job: _job,
-                                      tags: _tags.toList(),
-                                      message: _controller.text,
-                                    );
-
-                                    if (!mounted) return;
-
-                                    Navigator.pop(context);
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        backgroundColor: const Color(0xFF34C759),
-                                        behavior: SnackBarBehavior.floating,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        content: const Row(
-                                          children: [
-                                            Icon(Icons.check_circle, color: Colors.white, size: 20),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              'Terima kasih atas feedback Anda',
-                                              style: TextStyle(color: Colors.white),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        backgroundColor: const Color(0xFFFF3B30),
-                                        behavior: SnackBarBehavior.floating,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        content: const Row(
-                                          children: [
-                                            Icon(Icons.error_outline, color: Colors.white, size: 20),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              'Gagal mengirim feedback',
-                                              style: TextStyle(color: Colors.white),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                },
-                          child: const Text(
-                            'Kirim Feedback',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+      return items;
+    } on DioException catch (e) {
+      throw Exception(_mapDioError(e));
+    }
   }
 
-  Widget _buildRatingItem(int index) {
-    final emojis = ['😞', '😐', '🙂', '😄', '😍'];
-    final labels = ['Buruk', 'Cukup', 'Baik', 'Sangat Baik', 'Luar Biasa'];
-    final isSelected = _rating == index + 1;
-    
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth < 350 ? 72.0 : 64.0;
-        
-        return GestureDetector(
-          onTap: () => setState(() => _rating = index + 1),
-          child: Container(
-            width: width,
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? const Color(0xFF007AFF).withOpacity(0.08)
-                  : Colors.transparent,
-              border: Border.all(
-                color: isSelected
-                    ? const Color(0xFF007AFF)
-                    : Colors.grey.shade300,
-                width: isSelected ? 2 : 1,
-              ),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: 12),
-                Text(
-                  emojis[index],
-                  style: const TextStyle(fontSize: 32),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  labels[index],
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: constraints.maxWidth < 350 ? 11 : 12,
-                    color: isSelected
-                        ? const Color(0xFF007AFF)
-                        : const Color(0xFF6E6E73),
-                    fontWeight:
-                        isSelected ? FontWeight.w600 : FontWeight.normal,
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ],
-            ),
+  Future<News> getNewsById(int id) async {
+    try {
+      final res = await _dio.get('/news/$id');
+      return News.fromJson(res.data['data']);
+    } on DioException catch (e) {
+      throw Exception(_mapDioError(e));
+    }
+  }
+
+Future<List<Infographic>> getInfographic() async {
+    return getInfographicCached();
+  }
+
+  Future<List<Infographic>> getInfographicCached() {
+    _infographicCache ??= _fetchInfographic();
+    return _infographicCache!;
+  }
+
+  Future<List<Infographic>> _fetchInfographic() async {
+    try {
+      final res = await _dio.get('/infographic');
+      return (res.data['data'] as List)
+          .map((e) => Infographic.fromJson(e))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(_mapDioError(e));
+    }
+  }
+
+Future<List<ActivityNews>> getActivityNewsCached() {
+    _activityNewsCache ??= _fetchActivityNews();
+    return _activityNewsCache!;
+  }
+
+  Future<List<ActivityNews>> getActivityNews() async {
+    final res = await _dio.get('/activity-news');
+    return (res.data['data'] as List)
+        .map((json) => ActivityNews.fromJson(json))
+        .toList();
+  }
+
+  Future<List<ActivityNews>> _fetchActivityNews() async {
+    try {
+      final res = await _dio.get('/activity-news');
+      return (res.data['data'] as List)
+          .map((e) => ActivityNews.fromJson(e))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(_mapDioError(e));
+    }
+  }
+
+Future<List<StatisticData>> getStatistic() async {
+    try {
+      final res = await _dio.get('/statistics');
+      return (res.data['data'] as List)
+          .map((e) => StatisticData.fromJson(e))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(_mapDioError(e));
+    }
+  }
+
+Future<List<model.Category>> getCategories() async {
+    try {
+      final res = await _dio.get('/category');
+      return (res.data['data'] as List)
+          .map((e) => model.Category.fromJson(e))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(_mapDioError(e));
+    }
+  }
+
+ Future<List<ReleasePlan>> getReleasePlans() async {
+    try {
+      final res = await _dio.get('/release-plans');
+      return (res.data['data'] as List)
+          .map((e) => ReleasePlan.fromJson(e))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(_mapDioError(e));
+    }
+  }
+
+ Future<List<GlobalSearchItem>> globalSearch(String query) async {
+    try {
+      final res = await _dio.get('/search', queryParameters: {'q': query});
+      final data = res.data['data'];
+
+      final List<GlobalSearchItem> results = [];
+
+      for (final item in data['news'] ?? []) {
+        results.add(
+          GlobalSearchItem(
+            type: SearchItemType.news,
+            id: item['news_id'],
+            title: item['title'],
+            subtitle: item['release_date'],
+            tag: 'Berita Resmi Statistik',
           ),
         );
-      },
-    );
+      }
+
+      for (final item in data['publications'] ?? []) {
+        results.add(
+          GlobalSearchItem(
+            type: SearchItemType.publication,
+            id: item['publication_id'],
+            title: item['title'],
+            subtitle: item['release_date'],
+            tag: 'Publikasi',
+          ),
+        );
+      }
+
+      for (final item in data['statistics'] ?? []) {
+        results.add(
+          GlobalSearchItem(
+            type: SearchItemType.statistic,
+            id: item['id'],
+            title: item['title'],
+            subtitle: item['subsubject_name'] ?? item['subject_name'],
+            tag: 'Tabel Statistik',
+          ),
+        );
+      }
+
+      for (final item in data['infographics'] ?? []) {
+        results.add(
+          GlobalSearchItem(
+            type: SearchItemType.infographic,
+            id: item['infographic_id'],
+            title: item['title'],
+            subtitle: item['description'],
+            tag: 'Infografis',
+          ),
+        );
+      }
+
+      return results;
+    } on DioException catch (e) {
+      throw Exception(_mapDioError(e));
+    }
   }
-}
+
+  Future<void> submitFeedback({
+    required int rating,
+    String? job,
+    List<String>? tags,
+    String? message,
+  }) async {
+    try {
+      await _dio.post(
+        '/feedback',
+        data: {'rating': rating, 'job': job, 'tags': tags, 'message': message},
+      );
+    } on DioException catch (e) {
+      throw Exception(_mapDioError(e));
+    }
+  }
+
+  Future<List<OnboardingBanner>> getOnboardingBanners() async {
+    final res = await _dio.get('/onboarding-banners');
+
+    final List list = res.data['data'];
+
+    return list.map((e) => OnboardingBanner.fromJson(e)).toList();
+  }

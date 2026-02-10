@@ -57,7 +57,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -96,7 +96,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
+                color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -120,7 +120,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: Colors.black.withValues(alpha: 0.15),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -159,7 +159,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                   ),
                 )
               : Container(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                   width: double.infinity,
                   height: double.infinity,
                   child: const Center(
@@ -211,7 +211,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -266,7 +266,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -301,7 +301,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF34C759).withOpacity(0.1),
+                      color: const Color(0xFF34C759).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -345,7 +345,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: _isSharing
@@ -438,7 +438,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           ? '${widget.news.title}\n\nDirilis: ${widget.news.releaseDate}'
           : widget.news.title;
 
-      await Share.share(text);
+      await SharePlus.instance.share(ShareParams(text: text));
     } finally {
       if (mounted) {
         setState(() {

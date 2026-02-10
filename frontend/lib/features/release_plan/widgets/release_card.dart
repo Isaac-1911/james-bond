@@ -11,6 +11,8 @@ class ReleaseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool canOpen = item.isReleased && item.targetId != null;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -45,45 +47,63 @@ class ReleaseCard extends StatelessWidget {
             builder: (context, constraints) {
               final isSmallScreen = constraints.maxWidth < 360;
 
+              final statusText = item.isReleased
+                  ? 'Sudah rilis (${_fmt(item.releasedDate!)})'
+                  : 'Belum rilis';
+
+              final statusColor =
+                  item.isReleased ? Colors.green : Colors.orange;
+
+              final button = ElevatedButton(
+                onPressed: canOpen ? () => _openTarget(context) : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF007AFF),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 1,
+                ),
+                child: Text(
+                  item.type == ReleaseType.brs
+                      ? 'Lihat BRS'
+                      : 'Lihat Publikasi',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              );
+
               if (isSmallScreen) {
-                // 🔽 LAYAR KECIL → tombol di bawah teks status
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item.isReleased
-                          ? 'Sudah rilis (${_fmt(item.releasedDate!)})'
-                          : 'Belum rilis',
+                      statusText,
                       style: TextStyle(
-                        color: item.isReleased ? Colors.green : Colors.orange,
+                        color: statusColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                       ),
                     ),
                     const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: _actionButton(context, item),
-                    ),
+                    SizedBox(width: double.infinity, child: button),
                   ],
                 );
               }
 
-              // ➡️ LAYAR NORMAL / BESAR → sejajar
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    item.isReleased
-                        ? 'Sudah rilis (${_fmt(item.releasedDate!)})'
-                        : 'Belum rilis',
+                    statusText,
                     style: TextStyle(
-                      color: item.isReleased ? Colors.green : Colors.orange,
+                      color: statusColor,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
                   ),
-                  _actionButton(context, item),
+                  button,
                 ],
               );
             },
@@ -93,46 +113,40 @@ class ReleaseCard extends StatelessWidget {
     );
   }
 
-  String _month(int m) => [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'Mei',
-    'Jun',
-    'Jul',
-    'Agu',
-    'Sep',
-    'Okt',
-    'Nov',
-    'Des',
-  ][m - 1];
-
-  String _fmt(DateTime d) => '${d.day} ${_month(d.month)} ${d.year}';
-
-  void _openTarget(BuildContext context, ReleasePlan item) async {
+  // =============================
+  // 🔁 NAVIGATION (FINAL FIX)
+  // =============================
+  Future<void> _openTarget(BuildContext context) async {
     if (!item.isReleased || item.targetId == null) return;
 
     try {
-      if (item.type == 'publikasi') {
-        final publication = await ApiService().getPublicationById(
-          item.targetId!,
-        );
+      if (item.type == ReleaseType.publikasi) {
+        final publication =
+            await ApiService().getPublicationById(item.targetId!);
+
+        if (!context.mounted) return;
 
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => PublicationDetailScreen(publication: publication),
+            builder: (_) =>
+                PublicationDetailScreen(publication: publication),
           ),
         );
-      } else if (item.type == 'brs') {
+      } else if (item.type == ReleaseType.brs) {
         final news = await ApiService().getNewsById(item.targetId!);
+
+        if (!context.mounted) return;
+
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => NewsDetailScreen(news: news)),
+          MaterialPageRoute(
+            builder: (_) => NewsDetailScreen(news: news),
+          ),
         );
       }
-    } catch (e) {
+    } catch (_) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Gagal membuka detail'),
@@ -142,23 +156,20 @@ class ReleaseCard extends StatelessWidget {
     }
   }
 
-  Widget _actionButton(BuildContext context, ReleasePlan item) {
-    return ElevatedButton(
-      onPressed: item.isReleased && item.targetId != null
-          ? () => _openTarget(context, item)
-          : null,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF007AFF),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 1, // iOS-like
-      ),
-      child: Text(
-        item.type == 'brs' ? 'Lihat BRS' : 'Lihat Publikasi',
-        style: const TextStyle(
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
+  String _month(int m) => const [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des',
+      ][m - 1];
+
+  String _fmt(DateTime d) => '${d.day} ${_month(d.month)} ${d.year}';
 }

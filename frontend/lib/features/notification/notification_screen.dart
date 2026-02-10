@@ -18,13 +18,10 @@ class NotificationScreen extends StatelessWidget {
             color: Color(0xFF007AFF),
           ),
         ),
-        backgroundColor: Colors.white.withOpacity(0.9),
+        backgroundColor: Colors.white.withValues(alpha: 0.9),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            CupertinoIcons.back,
-            color: Color(0xFF007AFF),
-          ),
+          icon: const Icon(CupertinoIcons.back, color: Color(0xFF007AFF)),
           onPressed: () => Navigator.pop(context),
         ),
       ),

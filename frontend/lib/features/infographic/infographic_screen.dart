@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../core/services/api_service.dart';
 import '../../core/config/api_config.dart';
@@ -6,7 +7,6 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/helpers/download_helper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-
 
 class InfographicScreen extends StatefulWidget {
   const InfographicScreen({super.key});
@@ -17,7 +17,7 @@ class InfographicScreen extends StatefulWidget {
 
 class _InfographicScreenState extends State<InfographicScreen> {
   late final Future<List<Infographic>> _infographicsFuture;
-  final ValueNotifier<List<Infographic>> _infographics = 
+  final ValueNotifier<List<Infographic>> _infographics =
       ValueNotifier<List<Infographic>>([]);
 
   @override
@@ -44,9 +44,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
           children: [
             _buildAppBar(),
             const SizedBox(height: 20),
-            Expanded(
-              child: _buildContent(),
-            ),
+            Expanded(child: _buildContent()),
           ],
         ),
       ),
@@ -59,7 +57,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -98,7 +96,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF007AFF).withOpacity(0.1),
+                color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -148,10 +146,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
           const SizedBox(height: 20),
           Text(
             'Memuat infografis...',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
         ],
       ),
@@ -167,7 +162,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFFFF3B30).withOpacity(0.1),
+              color: const Color(0xFFFF3B30).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -189,10 +184,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
           Text(
             'Coba lagi nanti atau periksa koneksi internet',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
           const SizedBox(height: 24),
           SizedBox(
@@ -211,10 +203,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
               ),
               child: const Text(
                 'Coba Lagi',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -232,7 +221,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF007AFF).withOpacity(0.1),
+              color: const Color(0xFF007AFF).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -253,10 +242,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
           const SizedBox(height: 8),
           Text(
             'Infografis akan segera tersedia',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
         ],
       ),
@@ -273,9 +259,12 @@ class _InfographicScreenState extends State<InfographicScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF007AFF).withOpacity(0.1),
+                  color: const Color(0xFF007AFF).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -303,7 +292,8 @@ class _InfographicScreenState extends State<InfographicScreen> {
               Expanded(
                 child: ListView.separated(
                   itemCount: infographics.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 20),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 20),
                   itemBuilder: (context, index) => InfographicCard(
                     infographic: infographics[index],
                   ).animate().fadeIn(duration: 300.ms, delay: (index * 60).ms),
@@ -320,10 +310,7 @@ class _InfographicScreenState extends State<InfographicScreen> {
 class InfographicCard extends StatefulWidget {
   final Infographic infographic;
 
-  const InfographicCard({
-    super.key,
-    required this.infographic,
-  });
+  const InfographicCard({super.key, required this.infographic});
 
   @override
   State<InfographicCard> createState() => _InfographicCardState();
@@ -333,8 +320,10 @@ class _InfographicCardState extends State<InfographicCard> {
   bool _isDownloading = false;
   bool _isSharing = false;
 
-  String get _imageUrl => '${ApiConfig.storageUrl}/${widget.infographic.image_url}';
-  String get _filename => '${widget.infographic.title.replaceAll(' ', '_').toLowerCase()}.png';
+  String get _imageUrl =>
+      '${ApiConfig.storageUrl}/${widget.infographic.imageUrl}';
+  String get _filename =>
+      '${widget.infographic.title.replaceAll(' ', '_').toLowerCase()}.png';
 
   @override
   Widget build(BuildContext context) {
@@ -344,7 +333,7 @@ class _InfographicCardState extends State<InfographicCard> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -391,7 +380,7 @@ class _InfographicCardState extends State<InfographicCard> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -465,12 +454,9 @@ class _InfographicCardState extends State<InfographicCard> {
       child: Container(
         height: 48,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: color.withOpacity(0.3),
-            width: 1.5,
-          ),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
         ),
         child: Center(
           child: isLoading
@@ -521,9 +507,7 @@ class _InfographicCardState extends State<InfographicCard> {
         SnackBar(
           backgroundColor: const Color(0xFF34C759),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           content: const Row(
             children: [
               Icon(Icons.check_circle, color: Colors.white, size: 20),
@@ -543,9 +527,7 @@ class _InfographicCardState extends State<InfographicCard> {
         SnackBar(
           backgroundColor: const Color(0xFFFF3B30),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           content: const Row(
             children: [
               Icon(Icons.error_outline, color: Colors.white, size: 20),
@@ -575,14 +557,13 @@ class _InfographicCardState extends State<InfographicCard> {
     });
 
     try {
-      final file = await DownloadHelper.downloadImage(
+      final File file = await DownloadHelper.downloadImage(
         imageUrl: _imageUrl,
         fileName: _filename,
       );
 
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: widget.infographic.title,
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], text: widget.infographic.title),
       );
     } catch (_) {
       if (!mounted) return;
@@ -591,9 +572,7 @@ class _InfographicCardState extends State<InfographicCard> {
         SnackBar(
           backgroundColor: const Color(0xFFFF3B30),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           content: const Row(
             children: [
               Icon(Icons.error_outline, color: Colors.white, size: 20),

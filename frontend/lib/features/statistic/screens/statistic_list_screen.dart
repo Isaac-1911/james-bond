@@ -14,12 +14,13 @@ class StatisticListScreen extends StatefulWidget {
 class _StatisticListScreenState extends State<StatisticListScreen> {
   late Future<List<StatisticSubject>> _futureSubjects;
   final TextEditingController _searchController = TextEditingController();
+  late final StatisticApiService _statisticApi;
   String _keyword = '';
 
   @override
   void initState() {
     super.initState();
-    _futureSubjects = StatisticApiService.getSubjects();
+    _futureSubjects = _statisticApi.getSubjects();
   }
 
   @override
@@ -77,7 +78,7 @@ class _StatisticListScreenState extends State<StatisticListScreen> {
                 final filteredSubjects = _keyword.isEmpty
                     ? subjects
                     : subjects.where((subject) {
-                        final subjectName = subject.name?.toLowerCase() ?? '';
+                        final subjectName = subject.name.toLowerCase();
                         return subjectName.contains(_keyword);
                       }).toList();
 
@@ -127,11 +128,12 @@ class _SubjectExpansion extends StatefulWidget {
 
 class _SubjectExpansionState extends State<_SubjectExpansion> {
   late Future<List<StatisticSubsubject>> _futureSubsubjects;
+  late final StatisticApiService _statisticApi;
 
   @override
   void initState() {
     super.initState();
-    _futureSubsubjects = StatisticApiService.getSubsubjects(widget.subject.id!);
+    _futureSubsubjects = _statisticApi.getSubsubjects(widget.subject.id!);
   }
 
   @override
@@ -141,7 +143,7 @@ class _SubjectExpansionState extends State<_SubjectExpansion> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: ExpansionTile(
         title: Text(
-          widget.subject.name ?? '-',
+          widget.subject.name,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         children: [
@@ -157,17 +159,17 @@ class _SubjectExpansionState extends State<_SubjectExpansion> {
 
               final subs = snapshot.data ?? [];
 
-              final filteredSubs = widget.keyword.isEmpty
-                  ? subs
-                  : subs.where((sub) {
-                      final subName = sub.name?.toLowerCase() ?? '';
-                      return subName.contains(widget.keyword);
-                    }).toList();
+              // final filteredSubs = widget.keyword.isEmpty
+              //     ? subs
+              //     : subs.where((sub) {
+              //         final subName = sub.name?.toLowerCase() ?? '';
+              //         return subName.contains(widget.keyword);
+              //       }).toList();
 
               return Column(
                 children: subs.map((sub) {
                   return ListTile(
-                    title: Text(sub.name ?? '-'),
+                    title: Text(sub.name),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
                       Navigator.push(
@@ -175,7 +177,7 @@ class _SubjectExpansionState extends State<_SubjectExpansion> {
                         MaterialPageRoute(
                           builder: (_) => StatisticTableListScreen(
                             subsubjectId: sub.id!,
-                            title: sub.name ?? '',
+                            title: sub.name,
                           ),
                         ),
                       );

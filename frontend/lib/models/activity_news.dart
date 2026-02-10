@@ -15,11 +15,11 @@ class ActivityNews {
 
   factory ActivityNews.fromJson(Map<String, dynamic> json) {
     return ActivityNews(
-      id: json['activity_news_id'] as int,
-      title: json['title'] as String,
-      summary: json['summary'] as String,
-      imageUrl: json['image_url'] as String,
-      releaseDate: json['release_date'] as String
+      id: int.tryParse(json['activity_news_id']?.toString() ?? '') ?? 0,
+      title: json['title']?.toString() ?? '',
+      summary: json['summary']?.toString(),
+      imageUrl: json['image_url']?.toString(),
+      releaseDate: json['release_date']?.toString(),
     );
   }
 }

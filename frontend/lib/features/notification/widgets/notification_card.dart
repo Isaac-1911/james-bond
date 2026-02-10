@@ -22,7 +22,7 @@ class NotificationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -32,22 +32,13 @@ class NotificationCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Date
-          Text(
-            date,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
+          Text(date, style: const TextStyle(fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 6),
 
           // Title
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
 
@@ -66,10 +57,7 @@ class NotificationCard extends StatelessWidget {
         children: [
           Text(
             section.title,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
           ...section.items.map(
@@ -82,10 +70,7 @@ class NotificationCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       item,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        height: 1.5,
-                      ),
+                      style: const TextStyle(fontSize: 14, height: 1.5),
                     ),
                   ),
                 ],
@@ -102,8 +87,5 @@ class NotificationSection {
   final String title;
   final List<String> items;
 
-  const NotificationSection({
-    required this.title,
-    required this.items,
-  });
+  const NotificationSection({required this.title, required this.items});
 }

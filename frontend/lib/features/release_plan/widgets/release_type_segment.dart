@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/release_plan.dart';
 
 class ReleaseTypeSegment extends StatelessWidget {
-  final String selected;
-  final Function(String) onChanged;
+  final ReleaseType selected;
+  final ValueChanged<ReleaseType> onChanged;
 
   const ReleaseTypeSegment({
     super.key,
@@ -29,51 +30,44 @@ class ReleaseTypeSegment extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () => onChanged('publikasi'),
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: selected == 'publikasi'
-                        ? const Color(0xFF007AFF)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Text(
-                    'Publikasi',
-                    style: TextStyle(
-                      color: selected == 'publikasi'
-                          ? Colors.white
-                          : Colors.grey,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
+            _buildItem(
+              label: 'Publikasi',
+              type: ReleaseType.publikasi,
             ),
-            Expanded(
-              child: GestureDetector(
-                onTap: () => onChanged('brs'),
-                child: Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: selected == 'brs'
-                        ? const Color(0xFF007AFF)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Text(
-                    'BRS',
-                    style: TextStyle(
-                      color: selected == 'brs' ? Colors.white : Colors.grey,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
+            _buildItem(
+              label: 'BRS',
+              type: ReleaseType.brs,
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItem({
+    required String label,
+    required ReleaseType type,
+  }) {
+    final isActive = selected == type;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onChanged(type),
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isActive
+                ? const Color(0xFF007AFF)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isActive ? Colors.white : Colors.grey,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );

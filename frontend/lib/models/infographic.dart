@@ -2,21 +2,21 @@ class Infographic {
   final int id;
   final String title;
   final String? description;
-  final String image_url;
+  final String imageUrl;
 
   Infographic({
     required this.id,
     required this.title,
     this.description,
-    required this.image_url,
+    required this.imageUrl,
   });
 
   factory Infographic.fromJson(Map<String, dynamic> json) {
     return Infographic(
-      id: json['infographic_id'],
-      title: json['title'],
-      description: json['description'],
-      image_url: json['image_url']
+      id: int.tryParse(json['infographic_id']?.toString() ?? '') ?? 0,
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString(),
+      imageUrl: json['image_url']?.toString() ?? '',
     );
   }
 }

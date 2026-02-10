@@ -1,43 +1,52 @@
 class Publication {
-  final int id;
+  final int publicationId;
   final String title;
   final String? releaseDate;
   final String? summary;
-  final int? publicationCategory;
+  final String publicationCategory;
   final String? coverUrl;
   final String? description;
   final String? fileUrl;
-  final int? catalogNumber;
-  final String? publicationNumber;
-  final String? isbn;
+  final String catalogNumber;
+  final String publicationNumber;
+  final String isbn;
+  final int? downloadCount;
 
   Publication({
-    required this.id,
+    required this.publicationId,
     required this.title,
     this.releaseDate,
     this.summary,
-    this.publicationCategory,
+    required this.publicationCategory,
     this.coverUrl,
     this.description,
     this.fileUrl,
-    this.catalogNumber,
-    this.publicationNumber,
-    this.isbn
+    required this.catalogNumber,
+    required this.publicationNumber,
+    required this.isbn,
+    this.downloadCount,
   });
 
   factory Publication.fromJson(Map<String, dynamic> json) {
-  return Publication(
-    id: json['publication_id'] as int,
-    title: json['title'] as String,
-    releaseDate: json['release_date'] as String?,
-    summary: json['summary'] as String?,
-    publicationCategory: json['publication_category'] as int?,
-    coverUrl: json['cover_url'] as String?,
-    description: json['description'] as String?,
-    fileUrl: json['file_url'] as String?,
-    catalogNumber: json['catalog_number'] as int?,
-    publicationNumber: json['publication_number'] as String?,
-    isbn: json['isbn'] as String?,
-  );
-}
+    return Publication(
+      publicationId: int.parse(json['publication_id'].toString()),
+      title: json['title']?.toString() ?? '',
+
+      releaseDate: json['release_date']?.toString(),
+      summary: json['summary']?.toString(),
+      description: json['description']?.toString(),
+
+      coverUrl: json['cover_url']?.toString(),
+      fileUrl: json['file_url']?.toString(),
+
+      publicationCategory: json['publication_category']?.toString() ?? '',
+
+      catalogNumber: json['catalog_number']?.toString() ?? '',
+      publicationNumber: json['publication_number']?.toString() ?? '',
+      isbn: json['isbn']?.toString() ?? '',
+
+      downloadCount:
+          int.tryParse(json['download_count']?.toString() ?? ''),
+    );
+  }
 }
