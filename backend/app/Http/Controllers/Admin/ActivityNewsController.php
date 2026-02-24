@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityNews;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ActivityNewsController extends Controller
 {
@@ -15,7 +16,7 @@ class ActivityNewsController extends Controller
     {
         $activityNews = ActivityNews::latest()->get();
         return view('admin.activity_news.index', compact('activityNews'));
-        }
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -33,7 +34,7 @@ class ActivityNewsController extends Controller
         $request->validate([
             'title' => 'required|max:150',
             'summary' => 'required',
-            'image_url' => 'required',
+            'image' => 'required',
             'pdf' => 'required|mimes:pdf|max:20000',
             'release_date' => 'required|date',
         ]);
@@ -41,21 +42,19 @@ class ActivityNewsController extends Controller
         $pdfPath = $request->file('pdf')->store('activity_news', 'public_direct');
 
         $imagePath = null;
-        if ($request->hasFile('image')){
+        if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('activity_news', 'public_direct');
         }
 
         ActivityNews::create([
             'title' => $request->title,
             'summary' => $request->summary,
-            'image_url' => $request->image_url,
-            'pdf' => $request->file_url,
+            'image_url' => $imagePath,
+            'file_url' => $pdfPath,
             'release_date' => $request->release_date
         ]);
 
         return redirect('/admin/activity-news')->with('succes', 'Activity news berhasil ditambahkan');
-
-
     }
 
     /**
@@ -87,6 +86,22 @@ class ActivityNewsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $activityNews = ActivityNews::findOrFail($id);
+
+        if ($activityNews->image_url) {
+            Storage::disk('public')->delete(
+                str_replace(asset('storage/') . '/', '', $activityNews->image_url)
+            );
+        }
+
+        if ($activityNews->file_url){
+            Storage::disk('public')->delete(
+                str_replace(asset('storage/') . '/', '', $activityNews->file_url)
+            );
+        }
+
+        $activityNews->delete();
+
+        return back()->with('success', 'Activity News berhasil dihapus');
     }
 }

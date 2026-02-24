@@ -37,7 +37,7 @@
 
             <div class="form-group">
                 <label>Gambar (opsional)</label>
-                <input type="file" name="image_url" accept="image/*">
+                <input type="file" name="image" accept="image/*">
             </div>
 
             <div class="form-group">

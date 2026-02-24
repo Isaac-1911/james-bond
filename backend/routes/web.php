@@ -73,5 +73,6 @@ Route::prefix('admin')
         Route::resource('statistics', AdminStatisticController::class)
             ->except(['show', 'edit', 'update']);
 
-        Route::resource('activity-news', AdminActivityNewsController::class)->except(['show', 'edit', 'update']);
+        Route::resource('activity-news', AdminActivityNewsController::class)
+            ->except(['show', 'edit', 'update']);
     });
