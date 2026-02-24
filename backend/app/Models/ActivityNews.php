@@ -13,7 +13,8 @@ class ActivityNews extends Model
         'title',
         'summary',
         'image_url',
-        'release_date'
+        'release_date',
+        'file_url'
     ];
 
     public $timestamps = true;

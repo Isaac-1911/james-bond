@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityNewsController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Web\HomeController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Admin\PublicationController as AdminPublicationControll
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\InfographicController as AdminInfographicController;
 use App\Http\Controllers\Admin\StatisticController as AdminStatisticController;
+use App\Http\Controllers\Admin\ActivityNewsController as AdminActivityNewsController;
 use App\Http\Controllers\Web\StatisticWebController;
 
 /*
@@ -34,7 +36,7 @@ Route::get('/publications/{id}', [PublicationWebController::class, 'show']);
 
 Route::get('/search', [SearchWebController::class, 'index']);
 
-Route::get('/statistics' ,[StatisticWebController::class, 'index']);
+Route::get('/statistics', [StatisticWebController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------
@@ -56,8 +58,8 @@ Route::prefix('admin')
     ->middleware('admin')
     ->group(function () {
 
-        Route::get('/', fn () => view('admin.dashboard'));
-        Route::get('/dashboard', fn () => view('admin.dashboard'));
+        Route::get('/', fn() => view('admin.dashboard'));
+        Route::get('/dashboard', fn() => view('admin.dashboard'));
 
         Route::resource('publications', AdminPublicationController::class)
             ->except(['show', 'edit', 'update']);
@@ -70,4 +72,6 @@ Route::prefix('admin')
 
         Route::resource('statistics', AdminStatisticController::class)
             ->except(['show', 'edit', 'update']);
+
+        Route::resource('activity-news', AdminActivityNewsController::class)->except(['show', 'edit', 'update']);
     });

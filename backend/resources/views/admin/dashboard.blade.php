@@ -28,9 +28,9 @@
     </div>
 
     <div class="dashboard-card">
-        <h3>Statistics</h3>
+        <h3>Berita Kegiatan</h3>
         <p>Kelola berita kegiatan</p>
-        <a href="/admin/statistics" class="btn btn-primary">Kelola</a>
+        <a href="/admin/activity-news" class="btn btn-primary">Kelola</a>
     </div>
 </div>
 @endsection
