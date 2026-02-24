@@ -25,7 +25,7 @@
                 @foreach($publications as $pub)
                 <tr>
                     <td>
-                        <img src="{{ asset('storage/' . $pub->cover_url) }}" alt="Cover {{ $pub->title }}" class="bps-cover-preview">
+                        <img src="{{ asset($pub->cover_url) }}" alt="Cover {{ $pub->title }}" class="bps-cover-preview">
                     </td>
                     <td>
                         <a href="/publications/{{ $pub->publication_id }}" class="bps-link">{{ $pub->title }}</a>
@@ -33,7 +33,7 @@
                     </td>
                     <td>{{ \Carbon\Carbon::parse($pub->release_date)->format('d M Y') }}</td>
                     <td>
-                        <a href="{{ asset('storage/' . $pub->file_url) }}" target="_blank" class="bps-btn">Unduh</a>
+                        <a href="{{ asset($pub->file_url) }}" target="_blank" class="bps-btn">Unduh</a>
                     </td>
                 </tr>
                 @endforeach

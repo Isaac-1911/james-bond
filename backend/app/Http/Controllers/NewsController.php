@@ -131,4 +131,28 @@ class NewsController extends Controller
             'News deleted'
         );
     }
+
+     public function download(News $news)
+    {
+        $path = $news->getRawOriginal('file_url');
+
+        // if (!$path || !Storage::disk('public')->exists($path)) {
+        //     return ApiResponse::error('File not found', null, 404);
+        // }
+
+        // $publication->increment('download_count');
+
+        // return response()->download(
+        //     storage_path('app/public/' . $path)
+        // );
+
+        $filePath = public_path('storage/' . $path);
+
+        if (!$path || !file_exists($filePath)) {
+            return ApiResponse::error('File not found', null, 404);
+        }
+
+
+        return response()->download($filePath);
+    }
 }

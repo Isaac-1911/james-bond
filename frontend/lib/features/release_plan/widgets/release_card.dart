@@ -14,7 +14,7 @@ class ReleaseCard extends StatelessWidget {
     final bool canOpen = item.isReleased && item.targetId != null;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),  
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),

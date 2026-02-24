@@ -5,76 +5,77 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Publication;
+use Illuminate\Support\Facades\Storage;
 
 class PublicationController extends Controller
 {
-    /**
-     * List semua publikasi
-     */
     public function index()
     {
         $publications = Publication::latest()->get();
         return view('admin.publications.index', compact('publications'));
     }
 
-    /**
-     * Form tambah publikasi
-     */
     public function create()
     {
         return view('admin.publications.create');
     }
 
-    /**
-     * Simpan publikasi baru
-     */
     public function store(Request $request)
     {
-        // ===============================
-        // VALIDATION (NAMA FIELD BENAR)
-        // ===============================
         $request->validate([
             'title'        => 'required|max:255',
-            'release_date' => 'required|date',
-            'summary'      => 'required',
+            'release_date' => 'nullable|date',
+            'summary'      => 'nullable',
+            'description'  => 'nullable',
+            'catalog_number'     => 'nullable',
+            'publication_number' => 'nullable|string|max:255',
+            'isbn'                => 'nullable|string|max:255',
             'cover'        => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
-            'pdf'          => 'required|mimes:pdf|max:20240',
+            'pdf'          => 'required|mimes:pdf|max:20480',
         ]);
 
-        // ===============================
-        // UPLOAD COVER (OPSIONAL)
-        // ===============================
+        // cover
         $coverPath = null;
         if ($request->hasFile('cover')) {
-            $coverPath = $request->file('cover')->store('covers', 'public');
+            $coverPath = $request->file('cover')->store('covers', 'public_direct');
         }
 
-        // ===============================
-        // UPLOAD PDF (WAJIB)
-        // ===============================
-        $pdfPath = $request->file('pdf')->store('publications', 'public');
+        // pdf
+        $pdfPath = $request->file('pdf')->store('publications', 'public_direct');
 
-        // ===============================
-        // SIMPAN KE DATABASE
-        // ===============================
         Publication::create([
-            'title'        => $request->title,
-            'release_date' => $request->release_date,
-            'summary'      => $request->summary,
-            'cover_url'    => $coverPath, // ← path, bukan URL
-            'file_url'     => $pdfPath,   // ← path, bukan URL
+            'title'              => $request->title,
+            'release_date'       => $request->release_date,
+            'summary'            => $request->summary,
+            'description'        => $request->description,
+            'catalog_number'     => $request->catalog_number,
+            'publication_number' => $request->publication_number,
+            'isbn'               => $request->isbn,
+            'cover_url'          => $coverPath,
+            'file_url'           => $pdfPath,
         ]);
 
         return redirect('/admin/publications')
             ->with('success', 'Publikasi berhasil ditambahkan');
     }
 
-    /**
-     * Hapus publikasi
-     */
     public function destroy($id)
     {
-        Publication::findOrFail($id)->delete();
+        $publication = Publication::findOrFail($id);
+
+        if ($publication->cover_url) {
+            Storage::disk('public')->delete(
+                str_replace(asset('storage/') . '/', '', $publication->cover_url)
+            );
+        }
+
+        if ($publication->file_url) {
+            Storage::disk('public')->delete(
+                str_replace(asset('storage/') . '/', '', $publication->file_url)
+            );
+        }
+
+        $publication->delete();
 
         return back()->with('success', 'Publikasi berhasil dihapus');
     }

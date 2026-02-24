@@ -28,7 +28,7 @@ class InfographicController extends Controller
         ]);
 
         // upload image
-        $imagePath = $request->file('image')->store('infographics', 'public');
+        $imagePath = $request->file('image')->store('infographics', 'public_direct');
 
         Infographic::create([
             'title'       => $request->title,

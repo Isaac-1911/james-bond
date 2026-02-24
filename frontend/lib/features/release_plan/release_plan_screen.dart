@@ -204,7 +204,7 @@ class _ReleasePlanScreenState extends State<ReleasePlanScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Rencana Terbit $_selectedType',
+                        'Rencana Terbit',
                         style: const TextStyle(
                           fontSize: 14,
                           color: Color(0xFF007AFF),

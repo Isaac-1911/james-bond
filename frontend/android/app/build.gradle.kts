@@ -18,7 +18,7 @@ if (keystorePropertiesFile.exists()) {
 
 
 android {
-    namespace = "com.example.frontend"
+    namespace = "com.bpsbondowoso.jamesbond"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -41,7 +41,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.frontend"
+        applicationId = "com.bpsbondowoso.jamesbond"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

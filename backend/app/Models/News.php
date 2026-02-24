@@ -13,7 +13,8 @@ class News extends Model
         'title',
         'release_date',
         'image_url',
-        'summary'
+        'summary',
+        'file_url'
     ];
 
     public $timestamps = true;

@@ -270,220 +270,226 @@ class _StatisticTableScreenState extends State<StatisticTableScreen> {
   }
 
   Widget _buildContent(StatisticTable table) {
-    final columns = [...table.columns]
-      ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
+  final columns = [...table.columns]
+    ..sort((a, b) => (a.order ?? 0).compareTo(b.order ?? 0));
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
+  return Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                table.title ?? '',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1D1D1F),
+                ),
+              ),
+              if (table.description != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  table.description!,
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
               ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  table.title ?? '',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1D1D1F),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF007AFF).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${columns.length} Kolom',
+                      style: const TextStyle(
+                        color: Color(0xFF007AFF),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-                if (table.description != null) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    table.description!,
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF34C759).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${table.rows.length} Baris',
+                      style: const TextStyle(
+                        color: Color(0xFF34C759),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ],
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
+                  if (table.lastUpdated != null)
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF007AFF).withValues(alpha: 0.1),
+                        color: const Color(0xFFFF9500).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
-                        '${columns.length} Kolom',
-                        style: const TextStyle(
-                          color: Color(0xFF007AFF),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF34C759).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '${table.rows.length} Baris',
-                        style: const TextStyle(
-                          color: Color(0xFF34C759),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    if (table.lastUpdated != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFF9500).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.update_rounded,
-                              size: 12,
-                              color: Color(0xFFFF9500),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Update: ${DateFormat('dd MMM yyyy').format(table.lastUpdated!)}',
-                              style: const TextStyle(
-                                color: Color(0xFFFF9500),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // ===============================
-                // BLOK TANYA ASISTEN
-                // ===============================
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        const Color(0xFF007AFF).withValues(alpha: 0.05),
-                        const Color(0xFF34C759).withValues(alpha: 0.05),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: const Color(0xFF007AFF).withValues(alpha: 0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF007AFF).withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.smart_toy_rounded,
-                          size: 20,
-                          color: Color(0xFF007AFF),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Butuh bantuan?',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF1D1D1F),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Asisten AI siap membantu memahami data tabel ini',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      SizedBox(
-                        height: 36,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            _openAssistantBottomSheet(table.id!);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF007AFF),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 0,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 0,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.update_rounded,
+                            size: 12,
+                            color: Color(0xFFFF9500),
                           ),
-                          child: const Text(
-                            'Tanya',
-                            style: TextStyle(
-                              fontSize: 13,
+                          const SizedBox(width: 4),
+                          Text(
+                            'Update: ${DateFormat('dd MMM yyyy').format(table.lastUpdated!)}',
+                            style: const TextStyle(
+                              color: Color(0xFFFF9500),
+                              fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ),
+                        ],
                       ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // ===============================
+              // BLOK TANYA ASISTEN
+              // ===============================
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF007AFF).withValues(alpha: 0.05),
+                      const Color(0xFF34C759).withValues(alpha: 0.05),
                     ],
                   ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: const Color(0xFF007AFF).withValues(alpha: 0.2),
+                    width: 1,
+                  ),
                 ),
-              ],
-            ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF007AFF).withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.smart_toy_rounded,
+                        size: 20,
+                        color: Color(0xFF007AFF),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Butuh bantuan?',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF1D1D1F),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Asisten AI siap membantu memahami data tabel ini',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      height: 36,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _openAssistantBottomSheet(table.id!);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF007AFF),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 0,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Tanya',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-        Expanded(child: _buildTableWithScroll(columns, table.rows)),
-      ],
-    );
-  }
+      ),
+      // Mengubah Expanded menjadi Flexible dan membungkus tabel dengan Container yang memiliki constraint
+      Flexible(
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 200),
+          child: _buildTableWithScroll(columns, table.rows),
+        ),
+      ),
+    ],
+  );
+}
 
   Widget _buildTableWithScroll(
     List<StatisticTableColumn> columns,

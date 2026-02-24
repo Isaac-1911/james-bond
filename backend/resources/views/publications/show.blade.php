@@ -11,8 +11,8 @@
 
 <div class="detail-row">
     <div class="detail-cover-col">
-        <img src="{{ asset('storage/' . $publication->cover_url) }}" alt="Cover {{ $publication->title }}" class="detail-cover">
-        <a href="{{ asset('storage/' . $publication->file_url) }}" target="_blank" class="download-btn">⬇ Unduh Publikasi (PDF)</a>
+        <img src="{{ asset($publication->cover_url) }}" alt="Cover {{ $publication->title }}" class="detail-cover">
+        <a href="{{ asset($publication->file_url) }}" target="_blank" class="download-btn">⬇ Unduh Publikasi (PDF)</a>
     </div>
 
     <div class="detail-meta-col">

@@ -29,7 +29,7 @@
 
     <div class="dashboard-card">
         <h3>Statistics</h3>
-        <p>Kelola data statistik</p>
+        <p>Kelola berita kegiatan</p>
         <a href="/admin/statistics" class="btn btn-primary">Kelola</a>
     </div>
 </div>

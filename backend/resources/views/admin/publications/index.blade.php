@@ -30,7 +30,7 @@
                 <td>{{ \Carbon\Carbon::parse($item->release_date)->format('d M Y') }}</td>
                 <td>
                     @if($item->cover_url)
-                        <img src="{{ asset('storage/'.$item->cover_url) }}" alt="Cover" class="preview-img">
+                        <img src="{{ asset($item->cover_url) }}" alt="Cover" class="preview-img">
                     @else
                         -
                     @endif

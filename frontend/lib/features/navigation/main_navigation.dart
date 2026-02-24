@@ -28,6 +28,9 @@ class _MainNavigationState extends State<MainNavigation>
   // bool _loadingOnboarding = true;
   bool _hasShownPopupThisSession = false;
 
+  // Variable untuk menangani tombol back
+  DateTime? _lastPressedAt;
+
   void switchTab(int index) {
     setState(() {
       _currentIndex = index;
@@ -100,6 +103,16 @@ class _MainNavigationState extends State<MainNavigation>
 
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('Tidak dapat membuka halaman Tentang Kami');
+    }
+  }
+
+  Future<void> _openInfoDeveloper() async {
+    final Uri url = Uri.parse(
+      'https://www.linkedin.com/in/muhammad-anwar-thoriq-702876321',
+    );
+
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Tidak dapat membuka halaman Info Developer');
     }
   }
 
@@ -183,6 +196,14 @@ class _MainNavigationState extends State<MainNavigation>
                     await _openTentangKami();
                   },
                 ),
+                _menuItem(
+                  icon: CupertinoIcons.chevron_left_slash_chevron_right,
+                  title: 'Info Developer',
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await _openInfoDeveloper();
+                  },
+                ),
               ],
             ),
           ),
@@ -225,55 +246,104 @@ class _MainNavigationState extends State<MainNavigation>
     _buildLainnyaPage(),
   ];
 
+  // Fungsi untuk menangani tombol back dengan PopScope
+  Future<bool> _onBackPressed() async {
+    // Cek apakah user menekan tombol back dalam waktu 2 detik
+    if (_lastPressedAt == null ||
+        DateTime.now().difference(_lastPressedAt!) >
+            const Duration(seconds: 2)) {
+      // Set waktu terakhir tombol back ditekan
+      _lastPressedAt = DateTime.now();
+
+      // Tampilkan snackbar notifikasi
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Tekan sekali lagi untuk keluar aplikasi',
+            textAlign: TextAlign.center,
+          ),
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.black87,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          margin: EdgeInsets.all(20),
+        ),
+      );
+
+      return false; // Jangan keluar aplikasi
+    }
+
+    return true; // Keluar aplikasi karena sudah menekan 2 kali
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F7),
-      body: IndexedStack(index: _currentIndex, children: _pages),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.9),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 12,
-                offset: const Offset(0, -3),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: GNav(
-              selectedIndex: _currentIndex,
-              onTabChange: (index) {
-                if (index == 4) {
-                  _showMoreMenu(context);
-                  return;
-                }
-                switchTab(index);
-              },
-              backgroundColor: Colors.transparent,
-              color: Colors.grey.shade500,
-              activeColor: const Color(0xFF007AFF),
-              tabBackgroundColor: const Color(
-                0xFF007AFF,
-              ).withValues(alpha: 0.1),
-              gap: 4,
-              padding: const EdgeInsets.all(12),
-              tabs: const [
-                GButton(icon: CupertinoIcons.home, text: 'Beranda'),
-                GButton(icon: CupertinoIcons.chart_bar_alt_fill, text: 'Tabel'),
-                GButton(icon: CupertinoIcons.search, text: 'Cari'),
-                GButton(icon: CupertinoIcons.book, text: 'Publikasi'),
-                GButton(
-                  icon: CupertinoIcons.line_horizontal_3,
-                  text: 'Lainnya',
+    return PopScope(
+      canPop: false, // Kita kontrol sendiri kapan bisa pop
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) {
+          return;
+        }
+
+        // Handle back press
+        final shouldPop = await _onBackPressed();
+        if (shouldPop && context.mounted) {
+          Navigator.of(context).pop(result);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF2F2F7),
+        body: IndexedStack(index: _currentIndex, children: _pages),
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.9),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 12,
+                  offset: const Offset(0, -3),
                 ),
               ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: GNav(
+                selectedIndex: _currentIndex,
+                onTabChange: (index) {
+                  if (index == 4) {
+                    _showMoreMenu(context);
+                    return;
+                  }
+                  switchTab(index);
+                },
+                backgroundColor: Colors.transparent,
+                color: Colors.grey.shade500,
+                activeColor: const Color(0xFF007AFF),
+                tabBackgroundColor: const Color(
+                  0xFF007AFF,
+                ).withValues(alpha: 0.1),
+                gap: 4,
+                padding: const EdgeInsets.all(12),
+                tabs: const [
+                  GButton(icon: CupertinoIcons.home, text: 'Beranda'),
+                  GButton(
+                    icon: CupertinoIcons.chart_bar_alt_fill,
+                    text: 'Tabel',
+                  ),
+                  GButton(icon: CupertinoIcons.search, text: 'Cari'),
+                  GButton(icon: CupertinoIcons.book, text: 'Publikasi'),
+                  GButton(
+                    icon: CupertinoIcons.line_horizontal_3,
+                    text: 'Lainnya',
+                  ),
+                ],
+              ),
             ),
           ),
         ),

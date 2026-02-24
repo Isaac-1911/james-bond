@@ -13,7 +13,6 @@ use App\Http\Controllers\Admin\PublicationController as AdminPublicationControll
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\InfographicController as AdminInfographicController;
 use App\Http\Controllers\Admin\StatisticController as AdminStatisticController;
-use App\Http\Controllers\StatisticDataController;
 use App\Http\Controllers\Web\StatisticWebController;
 
 /*

@@ -29,40 +29,33 @@ class NotificationScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: const [
           NotificationCard(
-            date: '27 Agustus 2025',
-            title: 'Rilis Versi 2.0.1 Telah Hadir!',
+            date: '21 Februari 2025',
+            title: 'James Bond Data Portal Resmi Hadir di Play Store!',
             sections: [
               NotificationSection(
-                title: '✨ Fitur Baru',
+                title: '🚀 Fitur Unggulan',
                 items: [
-                  'Akses sumber data berupa tabel pada indikator strategis kini lebih mudah dan cepat.',
-                  'Akses data ekspor-impor kini tersedia, memungkinkan pengguna menjelajahi informasi perdagangan internasional berdasarkan HS Code, negara, pelabuhan, tahun, dan bulan.',
+                  'Akses publikasi resmi dengan tampilan modern dan navigasi yang cepat.',
+                  'Jelajahi tabel statistik dinamis berdasarkan subject dan subsubject.',
+                  'Unduh publikasi dalam format PDF langsung dari aplikasi.',
+                  'Pencarian global untuk menemukan data, publikasi, dan berita secara instan.',
+                  'Infografis interaktif untuk memahami data secara visual.',
                 ],
               ),
               NotificationSection(
-                title: '💥 Perbaikan & Peningkatan',
+                title: '📊 Modul Statistik Dinamis',
                 items: [
-                  'Perbaikan bug minor guna meningkatkan stabilitas aplikasi.',
-                  'Optimalisasi performa agar pengalaman penggunaan lebih lancar.',
+                  'Struktur tabel fleksibel dengan jumlah kolom dan baris yang dinamis.',
+                  'Data terintegrasi langsung dengan backend resmi.',
+                  'Export data ke CSV dan Excel untuk kebutuhan analisis lanjutan.',
                 ],
               ),
-            ],
-          ),
-
-          NotificationCard(
-            date: '24 November 2020',
-            title: 'Rilis Versi Baru',
-            sections: [
               NotificationSection(
-                title: 'Penambahan Fitur',
+                title: '⚡ Performa & Stabilitas',
                 items: [
-                  'Publikasi terbaru, populer, dan utama',
-                  'BRS terbaru, populer, dan utama',
-                  'Tabel berdasarkan subyek, baru, dan populer',
-                  'ARC Berita Resmi Statistik',
-                  'SDGs',
-                  'Menu Tentang Kami',
-                  'Info Layanan',
+                  'Optimasi performa untuk pengalaman yang lebih lancar.',
+                  'Arsitektur backend–frontend terpisah untuk keamanan dan skalabilitas.',
+                  'Dikembangkan dengan standar production-ready untuk stabilitas jangka panjang.',
                 ],
               ),
             ],

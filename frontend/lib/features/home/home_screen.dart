@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<News> _newsList = [];
   bool _isLoadingNews = true;
 
-  List<Publication> _publications = [];
+  final List<Publication> _publications = [];
   bool _isLoadingPublication = true;
 
   int _currentCarouselIndex = 0;
