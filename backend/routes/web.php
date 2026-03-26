@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\ActivityNewsController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Web\HomeController;
@@ -15,6 +14,7 @@ use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\InfographicController as AdminInfographicController;
 use App\Http\Controllers\Admin\StatisticController as AdminStatisticController;
 use App\Http\Controllers\Admin\ActivityNewsController as AdminActivityNewsController;
+use App\Http\Controllers\Admin\ReleasePlanController as AdminReleasePlanController;
 use App\Http\Controllers\Web\StatisticWebController;
 
 /*
@@ -75,4 +75,7 @@ Route::prefix('admin')
 
         Route::resource('activity-news', AdminActivityNewsController::class)
             ->except(['show', 'edit', 'update']);
+
+        Route::resource('release-plan', AdminReleasePlanController::class)
+            ->except(['show', 'edit', 'edit']);
     });

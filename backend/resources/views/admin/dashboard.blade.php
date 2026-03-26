@@ -32,5 +32,11 @@
         <p>Kelola berita kegiatan</p>
         <a href="/admin/activity-news" class="btn btn-primary">Kelola</a>
     </div>
+
+    <div class="dashboard-card">
+        <h3>Rencana Terbit</h3>
+        <p>Kelola rencana terbit</p>
+        <a href="/admin/release-plan" class="btn btn-primary">Kelola</a>
+    </div>
 </div>
 @endsection

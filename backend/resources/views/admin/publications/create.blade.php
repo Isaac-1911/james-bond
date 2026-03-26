@@ -54,7 +54,7 @@
         <div class="form-group">
             <label>Nomor Katalog</label>
             <input
-                
+
                 name="catalog_number"
                 value="{{ old('catalog_number') }}"
             >
@@ -65,8 +65,7 @@
             <input
                 type="text"
                 name="publication_number"
-                value="{{ old('publication_number') }}"
-            >
+                value="{{ old('publication_number') }}">
         </div>
 
         <div class="form-group">
