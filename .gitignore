@@ -10,6 +10,9 @@ frontend/.idea/
 frontend/.vscode/
 frontend/.flutter-plugins
 frontend/.flutter-plugins-dependencies
+frontend/.query.sql
+frontend/james_bond.sql
+frontend/file_baru.pdf
 
 # === ANDROID ===
 frontend/android/.gradle/
